@@ -1,0 +1,80 @@
+config SECURITY_ALIASIX
+	bool "ALi advanced security access control"
+	depends on SECURITY
+	default n
+	help
+	  This selects ALi advanced security access control.
+	  If you are unsure how to answer this question, answer N.
+
+config FS_SIGNATURE_ALIASIX
+	bool "ALi filesystem signature method"
+	depends on SECURITY_ALIASIX
+	default n
+	help
+	  This selects ALi filesystem signature method.
+	  If you are unsure how to answer this question, answer N.
+
+config MTD_SIGNATURE_ALIASIX
+	bool "ALi MTD signature method"
+	depends on SECURITY_ALIASIX
+	default n
+	help
+	  This selects ALi MTD signature method.
+	  If you are unsure how to answer this question, answer N.
+
+config FILE_SIGNATURE_ALIASIX
+	bool "ALi file signature verification"
+	depends on SECURITY_ALIASIX
+	default n
+	help
+	  This selects ALi security check by file.
+	  If you are unsure how to answer this question, answer N.
+
+config IGNORE_LARGEFILE_ALIASIX
+	bool "Ignore large files in verified partition"
+	depends on SECURITY_ALIASIX
+	default n
+	help
+	  Choice to ignore the large file signature
+
+config DAEMON_SIGNATURE_ALIASIX
+	bool "ALi filesystem signature daemon enable"
+	depends on SECURITY_ALIASIX
+	depends on FILE_SIGNATURE_ALIASIX
+	default n
+	help
+	  This selects ALi filesystem signature method daemon thread.
+	  If you are unsure how to answer this question, answer N.
+
+config ROOTFS_RETIRE_THTREAD
+	bool "ALi rootfs retire thread enable"
+	depends on SECURITY_ALIASIX
+	depends on FILE_SIGNATURE_ALIASIX
+	default n
+	help
+	  This selects ALi rootfs retire thread.
+	  If you are unsure how to answer this question, answer N.
+	  
+config MEMORY_PROTECTION_ALIASIX
+	bool "ALi memory protection"
+	depends on SECURITY_ALIASIX
+	default y
+	help
+	  This selects ALi memory protection.
+	  If you are unsure how to answer this question, answer N.
+
+config CRYPTO_HW_DIGEST_ALIASIX
+	bool "ALi hardware digest method"
+	depends on SECURITY_ALIASIX
+	default n
+	help
+	  This selects ALi hardware digest method.
+	  If you are unsure how to answer this question, answer N.
+
+config ROOTFS_VERIFICATION_ALIASIX
+	bool "Verify the signature in rootfs"
+	depends on SECURITY_ALIASIX
+	default n
+	help
+	  This selects to verify the signature in rootfs.
+	  If you are unsure how to answer this question, answer N.

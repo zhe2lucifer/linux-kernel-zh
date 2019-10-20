@@ -1,0 +1,6 @@
+#
+# Makefile for the ali share buffer manager client
+#
+
+obj-$(CONFIG_ALI_SBM_CLIENT) += alisbmclient.o
+alisbmclient-y := ali_sbm_client.o

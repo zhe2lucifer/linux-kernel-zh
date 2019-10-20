@@ -1,0 +1,11 @@
+#
+# Makefile for the ali Remote Process Call hld avsync driver
+#
+
+obj-$(CONFIG_RPC_HLD_AVSYNC)        += ali_rpc_hld_avsync.o
+
+ali_rpc_hld_avsync-objs += ali_rpc_hld_avsync_dep.o
+
+$(obj)/ali_rpc_hld_avsync_dep.o:
+	cp $(obj)/ali_rpc_hld_avsync.bin $(obj)/ali_rpc_hld_avsync_dep.o
+

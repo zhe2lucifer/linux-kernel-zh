@@ -1,0 +1,11 @@
+#
+# Makefile for the ali smart card driver
+#
+
+obj-$(CONFIG_ALI_SMARTCARD)          += alismc.o
+
+alismc-objs += alismc_dep.o
+
+$(obj)/alismc_dep.o:
+	cp $(obj)/alismc.bin $(obj)/alismc_dep.o
+

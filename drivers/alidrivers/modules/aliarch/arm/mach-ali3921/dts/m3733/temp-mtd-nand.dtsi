@@ -1,0 +1,69 @@
+
+		/* NAND flash */
+		spi_flash@1 {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			compatible = "gd5f";
+			reg = <1>;
+			spi-max-frequency = <25000000>;
+			spi-cpol;
+			spi-cpha;
+			spi-rx-bus-width = <4>;
+
+			/* MTD partitions in NAND flash */
+
+
+			bootenv {
+				reg = <0x00000000 0x200000>;
+				loadaddr = <0xFFFFFFFF>;
+			};
+			
+
+			deviceinfo {
+				reg = <0x00200000 0x800000>;
+				loadaddr = <0xFFFFFFFF>;
+			};
+			
+
+			bootmedia {
+				reg = <0x00a00000 0x800000>;
+				loadaddr = <0xFFFFFFFF>;
+			};
+			
+
+			seebl {
+				reg = <0x01200000 0x400000>;
+				loadaddr = <0x85f80000>;
+			};
+			
+
+			see {
+				reg = <0x01600000 0x800000>;
+				loadaddr = <0x84000200>;
+			};
+			
+
+			kernel {
+				reg = <0x01e00000 0x1000000>;
+				loadaddr = <0x80100000>;
+			};
+			
+
+			ae {
+				reg = <0x02e00000 0x200000>;
+				loadaddr = <0x85EFD200>;
+			};
+			
+
+			rootfs {
+				reg = <0x03000000 0x8000000>;
+			};
+		
+
+			userfs1 {
+				reg = <0x0b000000 0x1800000>;
+			};
+		
+
+		};
+

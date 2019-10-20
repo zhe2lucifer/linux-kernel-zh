@@ -1,0 +1,128 @@
+API for Ali pinctrl subsystem.
+
+Pinctrl driver is low level part of pinctrl subsystem, it don't directly provide API to external calling.
+Instead pinctrl core subsystem offers them, usually these API have corresponding calling from pinctrl driver.
+
+1 Pinctrl core subsystem API
+------------------------------------------------------------------------
+
+	int pinctrl_request_gpio(unsigned gpio);
+	void pinctrl_free_gpio(unsigned gpio);
+	int pinctrl_gpio_direction_input(unsigned gpio);
+	int pinctrl_gpio_direction_output(unsigned gpio);
+	struct pinctrl * pinctrl_get(struct device *dev);
+	void pinctrl_put(struct pinctrl *p);
+	struct pinctrl_state * pinctrl_lookup_state(struct pinctrl *p, const char *name);
+	int pinctrl_select_state(struct pinctrl *p, struct pinctrl_state *s);
+	struct pinctrl * devm_pinctrl_get(struct device *dev);
+	void devm_pinctrl_put(struct pinctrl *p);
+	int pinctrl_pm_select_default_state(struct device *dev);
+	int pinctrl_pm_select_sleep_state(struct device *dev);
+	int pinctrl_pm_select_idle_state(struct device *dev);
+
+2 Ali Pinctrl API
+------------------------------------------------------------------------
+Ali pinctrl driver don't realize power management API and GPIO direction setting functions.
+
+	int pinctrl_request_gpio(unsigned gpio);
+	void pinctrl_free_gpio(unsigned gpio);
+	struct pinctrl * pinctrl_get(struct device *dev);
+	void pinctrl_put(struct pinctrl *p);
+	struct pinctrl_state * pinctrl_lookup_state(struct pinctrl *p, const char *name);
+	int pinctrl_select_state(struct pinctrl *p, struct pinctrl_state *s);
+	struct pinctrl * devm_pinctrl_get(struct device *dev);
+	void devm_pinctrl_put(struct pinctrl *p);
+
+- pinctrl_request_gpio() is called usually by GPIOLIB to request a single GPIO pin. When device
+  driver request GPIO pin, device driver will call GPIOLIB API. Device driver should not directly
+  call pinctrl_request_gpio().
+
+- pinctrl_free_gpio() free GPIO pin to pinctrl subsystem, as pinctrl_request_gpio(), it should be
+  called from GPIOLIB.
+
+- pinctrl_get() is called in process context to obtain a handle to all pinctrl
+  information for a given client device. It will allocate a struct from the
+  kernel memory to hold the pinmux state. All mapping table parsing or similar
+  slow operations take place within this API.
+
+- devm_pinctrl_get() is a variant of pinctrl_get() that causes pinctrl_put()
+  to be called automatically on the retrieved pointer when the associated
+  device is removed. It is recommended to use this function over plain
+  pinctrl_get().
+
+- pinctrl_lookup_state() is called in process context to obtain a handle to a
+  specific state for a the client device. This operation may be slow too.
+
+- pinctrl_select_state() programs pin controller hardware according to the
+  definition of the state as given by the mapping table. In theory this is a
+  fast-path operation, since it only involved blasting some register settings
+  into hardware. However, note that some pin controllers may have their
+  registers on a slow/IRQ-based bus, so client devices should not assume they
+  can call pinctrl_select_state() from non-blocking contexts.
+
+- pinctrl_put() frees all information associated with a pinctrl handle.
+
+- devm_pinctrl_put() is a variant of pinctrl_put() that may be used to
+  explicitly destroy a pinctrl object returned by devm_pinctrl_get().
+  However, use of this function will be rare, due to the automatic cleanup
+  that will occur even without calling it.
+
+
+
+4 Pin control requests from drivers
+------------------------------------------------------------------------
+
+#include <linux/pinctrl/consumer.h>
+
+struct foo_state {
+       struct pinctrl *p;
+       struct pinctrl_state *s;
+       ...
+};
+
+foo_probe()
+{
+	/* Allocate a state holder named "foo" etc */
+	struct foo_state *foo = ...;
+
+	foo->p = devm_pinctrl_get(&device);
+	if (IS_ERR(foo->p)) {
+		/* FIXME: clean up "foo" here */
+		return PTR_ERR(foo->p);
+	}
+
+	foo->s = pinctrl_lookup_state(foo->p, PINCTRL_STATE_DEFAULT);
+	if (IS_ERR(foo->s)) {
+		/* FIXME: clean up "foo" here */
+		return PTR_ERR(s);
+	}
+
+	ret = pinctrl_select_state(foo->s);
+	if (ret < 0) {
+		/* FIXME: clean up "foo" here */
+		return ret;
+	}
+}
+
+foo_switch()
+{
+	/* Enable on position A */
+	ret = pinctrl_select_state(s1);
+	if (ret < 0)
+	    ...
+
+	...
+
+	/* Enable on position B */
+	ret = pinctrl_select_state(s2);
+	if (ret < 0)
+	    ...
+
+	...
+}
+
+
+5 Closeing
+------------------------------------------------------------------------
+All more information you can refer to linux-x.x.x/Documentation/pinctrl.txt.
+You can also obtain deeply understanding by read linux pinctrl source code.

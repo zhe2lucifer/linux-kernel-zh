@@ -1,0 +1,11 @@
+#
+# Makefile for the ali Remote Process Call hld gma driver
+#
+
+obj-$(CONFIG_RPC_HLD_GMA)        += ali_rpc_hld_gma.o
+
+ali_rpc_hld_gma-objs += ali_rpc_hld_gma_dep.o
+
+$(obj)/ali_rpc_hld_gma_dep.o:
+	cp $(obj)/ali_rpc_hld_gma.bin $(obj)/ali_rpc_hld_gma_dep.o
+

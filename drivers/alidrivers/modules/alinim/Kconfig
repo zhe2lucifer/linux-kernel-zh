@@ -1,0 +1,277 @@
+menuconfig DVB_SUPPORT
+	bool "NIM Driver For Ali App"
+	help
+	  NIM Driver Selection.
+
+if DVB_SUPPORT
+
+menuconfig  DVBS_DVBS2
+    tristate "DVBS_DVBS2 Demod Driver Selection"
+    depends on DVB_SUPPORT
+    help
+      This provides NIM driver for DVBS_DVBS2.
+      
+config ALI_DVBS_COMMON
+		bool
+    depends on DVBS_DVBS2
+    help
+      This provides dvbs demod common file.
+
+config M3501
+    tristate "Support ALi M3501 Demod Driver"
+    depends on DVBS_DVBS2
+    select ALI_DVBS_COMMON
+    help
+      This provides m3501 demod driver.
+
+config S3503
+    tristate "Support ALi S3503 Demod Driver"
+    depends on DVBS_DVBS2
+    select ALI_DVBS_COMMON
+    help
+      This provides s3503 demod driver.
+
+config C3505
+    tristate "Support ALi C3505 Demod Driver"
+    depends on DVBS_DVBS2
+    select ALI_DVBS_COMMON
+    select ALI_PLSN
+    help
+      This provides c3505 demod driver.
+      
+config C3501H
+    tristate "Support ALi C3501H Demod Driver"
+    depends on DVBS_DVBS2
+    select ALI_DVBS_COMMON
+    select ALI_PLSN
+    help
+      This provides c3501h demod driver.
+      
+config ALI_PLSN
+    bool "Support PLSN"
+    depends on DVBS_DVBS2
+    depends on C3505
+    help
+      This provides plsn support file.
+
+menuconfig DVBC
+    tristate "DVBC Demod Driver Selection"
+    depends on DVB_SUPPORT
+    help
+      This provides NIM driver for DVBC.
+
+menuconfig S3281
+    tristate "Support ALi S3281 Demod Driver"
+    depends on DVBC
+    help
+      This provides s3281 demod driver.
+
+config S3281_J83B
+    tristate "Support ALi S3281 Demod J83B Mode"
+    depends on S3281
+    help
+      This provides s3281 demod J83B mode.
+
+config S3281_J83A
+    tristate "Support ALi S3281 Demod J83AC Mode"
+    depends on S3281
+    help
+      This provides s3281 demod J83AC mode.
+
+config MXL214C
+   tristate "Support Maxliner MXL214C Demod Driver"
+   depends on DVBC
+   help
+     This provides mxl214c demod driver.
+
+config TDA10025
+    tristate "Support NXP TDA10025 Demod Driver"
+    depends on DVBC
+    help
+      This provides tda10025 demod driver.
+
+config S3202
+    tristate "Support S3202 Demod Driver"
+    depends on DVBC
+    help
+      This provides S3202 demod driver.
+
+config MXL241
+		tristate "Support MXL241 Demod driver."
+	  depends on DVBC
+	  help
+	    This provides  mxl241 demod driver.
+
+menuconfig DVBT_DVBT2_ISDBT
+    tristate "DVBT_DVBT2_ISDBT Demod Driver Selection"
+    depends on DVB_SUPPORT
+    help
+      This provides NIM Driver for DVBT_DVBT2_ISDBT.
+
+menuconfig S3821
+    tristate "Support ALi S3821 Demod Driver"
+    depends on DVBT_DVBT2_ISDBT
+    help
+      This provides ALi s3821 demod driver.
+
+ config S3821_DVBT
+    tristate "Support ALi S3821 Demod DVBT Mode"
+    depends on S3821
+    help
+      This provides ALi s3821 demod DVBT mode.
+
+ config S3821_DVBT2_ISDBT
+		tristate "Support ALi S3821 Demod DVBT2_ISDBT Mode"
+		depends on S3821
+		help
+			This provides ALi s3821 demod DVBT2_ISDBT mode.
+
+config CXD2837
+    tristate "Support SONY CXD2837 Demod Driver"
+    depends on DVBT_DVBT2_ISDBT
+    help
+      This provides sony cxd2837 demod driver for DVBT_DVBT2.  
+
+config CXD2838
+    tristate "Support SONY CXD2838 Demod Driver"
+    depends on DVBT_DVBT2_ISDBT
+    help
+      This provides a sony cxd2838 demod driver for ISDBT.
+menuconfig CXD2856
+    tristate "Support SONY CXD2856 Demod Driver"
+    depends on DVBT_DVBT2_ISDBT
+    help
+      This provides a sony cxd2856 demod driver for ISDBT DVBT/T2. 
+config CXD2856_DEBUG_PER
+	tristate "Support print per when per not 0"
+    depends on CXD2856
+    help
+      This provides print per when per not 0.
+menuconfig TUNER
+    tristate "Tuner Driver Selection"
+    depends on DVB_SUPPORT
+    help
+      This provides a tuner driver.
+
+config MXL603
+   tristate "Support MXL603 Tuner Driver"
+   depends on TUNER
+   help
+   	This provides MXL603 tuner driver.
+
+config SHARP_VZ7306
+    tristate "Support Sharp VZ7306 Tuner Driver"
+    depends on TUNER
+    help
+      This provides sharp VZ7306 tuner driver.
+      
+config AV2012
+    tristate "Support AV2012 tuner driver"
+    depends on TUNER
+    help
+      This provides AV2012 tuner driver.
+
+config M3031
+    tristate "Support ALi M3031 Tuner driver"
+    depends on TUNER
+    help
+      This provides ALi M3031 tuner driver.
+
+config RDA5815M
+		tristate "Support RDA5815M Tuner Driver"
+		depends on TUNER
+		help
+			This provides RDA5815M tuner driver.
+
+config TDA18250
+    tristate "Support NXP TDA18250 Tuner Driver"
+    depends on TUNER
+    help
+      This provides NXP tda18250 Tuner driver.
+
+config TDA18250_AB
+   tristate "Support NXP TDA18250_AB Tuner Driver"
+   depends on TUNER
+   help
+     This provides NXP TDA18250_AB tuner driver.
+
+config MXL203
+		tristate "Support MXL203 Tuner Driver."
+	  depends on TUNER
+	  help
+	    This provides MXL203 tuner driver.
+
+config RT810
+   tristate "Support RT810 Tuner Driver"
+   depends on TUNER
+   help
+     This provides RT810 tuner driver.
+
+config RT820C
+   tristate "Support RT820C Tuner Driver"
+   depends on TUNER
+   help
+     This provides RT820C tuner driver.
+
+config CXD2872
+    tristate "Support SONY CXD2872 tuner driver"
+    depends on TUNER
+    help
+      This provides SONY cxd2872 tuner driver.        
+
+config SI2141_DVBT
+    tristate "Support SI2141 tuner driver for DVBT_DVBT2"
+    depends on TUNER
+    help
+      This provides a SI2141 tuner driver for DVBT_DVBT2.
+
+config SI2141_ISDBT
+    tristate "Support SI2141 tuner driver for ISDBT"
+    depends on TUNER
+    help
+      This provides a SI2141 tuner driver for ISDBT.
+
+config DCT70701
+    tristate "Support DCT70701 tuner driver"
+    depends on TUNER
+    help
+      This provides dctT70701 tuner driver.
+
+config R858
+   tristate "Support R858 Tuner Driver"
+   depends on TUNER
+   help
+     This provides R858 tuner driver.
+
+config RT7X0
+    tristate "Support RT7x0 tuner driver"
+    depends on TUNER
+    help
+      This provides RT710 or RT720 tuner driver(x means 1,2...).
+	  
+config TUN_R836
+	tristate "Support R836 tuner driver"
+	depends on TUNER
+	help 
+		This provides R836 tuner driver.
+
+menuconfig LNB
+	tristate "LNB driver selection"
+	depends on DVB_SUPPORT
+	help
+		this provide lnb driver
+
+config LNB_TPS65233
+	tristate "Support LNB device TPS65233 driver"
+	depends on LNB
+	help 
+		this  provide lnb TPS65233 driver
+
+
+config LNB_A8304
+	tristate "Support LNB device A8304 driver"
+	depends on LNB
+	help 
+		this  provide lnb A8304 driver
+endif
+

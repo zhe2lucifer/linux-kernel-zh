@@ -1,0 +1,374 @@
+/{
+	compatible = "ali,3515x";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	interrupt-parent=<&cpuintc>;
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "";    /*define it later*/
+			reg = <0>;
+		};
+	};
+
+	cpuintc: cpuintc@0 {
+		#address-cells = <0>;
+		#interrupt-cells = <1>;
+		interrupt-controller;
+		compatible = "mips,cpu-interrupt-controller";
+	};
+	aliases {
+		gpio0 = &gpio0;
+		gpio1 = &gpio1;
+		gpio2 = &gpio2;
+		gpio3 = &gpio3;
+		i2c0  = &i2c0;
+		i2c1  = &i2c1;
+		i2c2  = &i2c2;
+	};
+	soc {
+		#address-cells	= <1>;
+		#size-cells	= <1>;
+		device_type	= "soc";
+		interrupt-parent=<&intc>;
+		/*ranges = <0 0 0>;*/		/*define it later*/
+		ranges;		/*child and parent address space 1:1 mapped */
+		compatible = "ali,3515x", "simple-bus";
+
+		pll0: oscillator {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-output-names = "pll0";
+		};
+
+		cpu_clk: clkdiv_cpu {
+			compatible = "fixed-factor-clock";
+			#clock-cells = <0>;
+			clocks = <&pll0>;
+			clock-output-names = "cpu_clk";
+		};
+
+		bus_clk: clkdiv_bus {
+			compatible = "fixed-factor-clock";
+			#clock-cells = <0>;
+			clocks = <&pll0>;
+			clock-output-names = "ahb_bus";
+		};
+
+		iomux: iomux@ {
+			compatible = "ali_tech,3515_iomux";
+			#gpio-range-cells = <3>;
+			reg = <0xFF10601c 0x4>;
+		};
+
+		intc:intc@0x18000030 {
+			compatible="alitech,generic-intc";
+			reg = <0x18000030 0x14 0x18040030 0xc>;
+			interrupt-controller;
+			#interrupt-cells=<1>;
+			interrupt-parent = <&cpuintc>;
+			interrupts = <3>;
+			irq_base = <8>;
+		};
+
+		rst_ctrl0: reset@18000080 {
+			compatible = "basic-mmio-gpio";
+			reg = <0x18000080 0x4>;
+			reg-names = "dat";
+			#gpio-cells = <2>;
+			ngpio = <32>;
+		};
+
+		rst_ctrl1: reset@18000084 {
+			compatible = "basic-mmio-gpio";
+			reg = <0x18000084 0x4>;
+			reg-names = "dat";
+			#gpio-cells = <2>;
+			ngpio = <32>;
+		};
+
+		sd@b8014000 {
+			compatible = "ali_tech,3515_sd";
+			reg = <0xb8014000 0x1000>;
+			max-frequency = <48000000>;
+			interrupts=<42>;
+			status = "okay";
+		};
+
+/*
+		uart@18018300 {
+			compatible = "ns16550a";
+			reg = <0x18018300 0x0C>;
+			interrupts = <24>;
+			clock-frequency	= <1843200>;
+		  	current-speed = <115200>;
+		  	reg-offset = <0>;
+		 	reg-shift = <0>;
+		 	fifo-size = <16>;
+		 	reg-io-width = <1>;
+		};
+
+		uart@18018600 {
+			compatible = "ns16550a";
+			reg = <0x18018600 0x0C>;
+			interrupts = <25>;
+			clock-frequency	= <1843200>;
+			current-speed = <115200>;
+			reg-offset = <0>;
+			reg-shift = <0>;
+			fifo-size = <16>;
+			reg-io-width = <1>;
+		};
+	*/
+		gpio0: gpio@18000044 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x18000044 0x20>;
+			interrupts = <8>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <32>;
+			interrupt-parent=<&intc>;
+			interrupt-controller;
+			gpio-ranges = <&pinctrl 0 0 32>;
+			#interrupt-cells = <1>;
+		};
+		gpio1: gpio@180000C4 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x180000C4 0x20>;
+			interrupts = <8>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <32>;
+			interrupt-parent=<&intc>;
+			interrupt-controller;
+			gpio-ranges = <&pinctrl 0 32 32>;
+			#interrupt-cells = <1>;
+		};
+		gpio2: gpio@180000E4 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x180000E4 0x20>;
+			interrupts = <8>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <32>;
+			interrupt-parent=<&intc>;
+			interrupt-controller;
+			gpio-ranges = <&pinctrl 0 64 32>;
+			#interrupt-cells = <1>;
+		};
+		gpio3: gpio@18000344 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x18000344 0x20>;
+			interrupts = <8>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <1>;
+			interrupt-parent=<&intc>;
+			interrupt-controller;
+			gpio-ranges = <&pinctrl 0 97 1>;
+			#interrupt-cells = <1>;
+		};
+/*
+		i2c0: i2c@18018200 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		reg = <0x18018200 0x20>;
+		interrupts = <26 >;
+		clock-frequency = <200000>;
+		};
+		i2c1: i2c@18018700 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		reg = <0x18018700 0x20>;
+		interrupts = < 33>;
+		clock-frequency = <200000>;
+		};
+*/
+		i2c2: i2c@18018b00 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		reg = <0x18018b00 0x20>;
+		interrupts = <34>;
+		clock-frequency = <200000>;
+		};
+
+		ethernet@0xb8000000 {
+		  	compatible = "ali_tech,3515_ethert";
+			reg = <0xb8000000 0x1000>;
+			interrupts=<42>;
+			status = "okay";
+		};
+
+		emmc@b8016000 {
+			compatible = "ali_tech,3515_emmc";
+			reg = <0xb8016000 0x1000>;
+			max-frequency = <48000000>;
+			interrupts=<43>;
+			status = "okay";
+		};
+
+		i2c@0 {
+			compatible = "ali_tech,3515_i2c_bus";
+			reg = <0x0 0x0>;   /*need to correct it by it's pic*/
+			interrupts = <10>;
+			clocks = <0x0>;
+			status = "okay";
+		};
+
+		spi@0x18016000 {
+			compatible = "ali_tech,3515_spi_bus";
+			reg = <0x18016000 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			interrupts = <10>;
+			clocks = <0>;
+			status = "okay";
+		};
+
+		sgdma@0x1800F000 {
+			compatible = "alitech,cap210-sgdma";
+			reg = <0x1800F000 0x100>;
+			interrupts = <20>;
+		};
+
+
+		otp: otp@0x18042000 {
+			compatible = "alitech,otp";
+			reg = <0x18042000 0x508>;
+			kdf_root = <0 2 0 0 0 1 0 3>;
+			status = "okay";
+			/* cell
+			 * 0: OTP address,
+			 * 1: first bit position,
+			 * 2: number of bits
+			 */
+			#otp-cells = <3>;
+		};
+
+
+		/*
+		rpcng@a5fff000 {
+			compatible = "alitech,rpcng";
+			reg = <0xa5fff000 0x1000>;
+			interrupts = <71 70 69 68>;
+			status = "okay";
+		};
+		*/
+	};
+
+	see_bus@0 {
+		compatible = "alitech,see-bus", "simple-bus";
+
+		reg = <0x0 0x100>;		/* specify RPC shared memory
+						 * subsection here */
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		DSC@0 {
+			compatible = "alitech,dsc";
+			clocks = <&cap210_clks_gate1 2>;
+			clock-names = "dsc_clk";
+			reg = <0>;
+			dev-index = <0>;
+		};
+
+		TRNG@1 {
+			compatible = "alitech,trng";
+			reg = <1>;
+		};
+
+		KL@2 {
+			compatible = "alitech,kl";
+			clocks = <&cap210_clks_gate1 16>;
+			clock-names = "kl_clk";
+			reg = <2>;
+			fixed-addr-mode-otp	= <&otp 0x03 14 1>;
+			fixed-engine-mode-otp = <&otp 0xdc 7 1>;
+			one-kl-one-engine-otp = <&otp 0x8c 8 1>;
+			disable-kdf-otp = <&otp 0x8c 4 1>;
+
+			kl_0 {
+				dev-index			= <0>;			/* /dev/kl/kl0 and /dev/kl/etsi0 */
+				root-key-addr		= <0x4d>;		/* selects root key index 0x4d */
+
+				level-sel-otp		= <&otp 0x03 15 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 18 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <4>;			/* generates keys for CSA2 in fixed engine mode */
+				one-kl-one-engine-algo	= <4>;		/* generates keys for CSA2 in one kl one engine mode */
+			};
+			kl_1 {
+				dev-index			= <1>;			/* /dev/kl/kl1 and /dev/kl/etsi1 */
+				root-key-addr		= <0x51>;		/* selects root key index 0x51 */
+
+				level-sel-otp		= <&otp 0x03 15 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 18 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <0 2>;		/* can generate keys for AES and TDES in fixed engine mode */
+				one-kl-one-engine-algo	= <0>;		/* generates keys for AES in one kl one engine mode */
+			};
+			kl_2 {
+				dev-index			= <2>;			/* /dev/kl/kl2 and /dev/kl/etsi2 */
+				root-key-addr		= <0x55>;		/* selects root key index 0x55 */
+
+				level-sel-otp		= <&otp 0xdc 14 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 19 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <0 2>;		/* can generate keys for AES and TDES in fixed engine mode */
+				one-kl-one-engine-algo	= <2>;		/* generates keys for TDES in one kl one engine mode */
+			};
+			kl_3 {
+				dev-index			= <3>;			/* /dev/kl/kl3 and /dev/kl/etsi3 */
+				root-key-addr		= <0x64>;		/* selects root key index 0x64 */
+
+				level-sel-otp		= <&otp 0xdc 16 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 21 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <5>;		/* can generate keys for CSA3 in fixed engine mode */
+				one-kl-one-engine-algo	= <5>;		/* generates keys for CSA3 in one kl one engine mode */
+			};
+
+			kl_4 {
+				dev-index			= <4>;			/* /dev/kl/kl4 and /dev/kl/etsi4 */
+				root-key-addr		= <0x60>;		/* selects root key index 0x60 */
+
+				level-sel-otp		= <&otp 0xdc 14 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 19 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <0 2>;		/* can generate keys for AES and TDES in fixed engine mode */
+				one-kl-one-engine-algo	= <2>;		/* generates keys for TDES in one kl one engine mode */
+			};
+
+			kl_5 {
+				dev-index			= <5>;			/* /dev/kl/kl5 and /dev/kl/etsi5 */
+				root-key-addr		= <0x59>;		/* selects root key index 0x59 */
+
+				level-sel-otp		= <&otp 0xdc 16 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 21 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <5>;		/* can generate keys for CSA3 in fixed engine mode */
+				one-kl-one-engine-algo	= <5>;		/* generates keys for CSA3 in one kl one engine mode */
+			};
+		};
+
+		SHA@4 {
+			compatible = "alitech,sha";
+			reg = <4>;
+		};
+
+		CERT@6 {
+				compatible = "alitech,cert";
+				reg = <6>;
+				cert-disable = <&otp 0x8c 19 1>;
+				asa-disable = <&otp 0x8c 0 1>;
+				clocks = <&cap210_clks_gate1 1>;
+				clock-names = "cert_ip_clk";
+		};
+	};
+};

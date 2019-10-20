@@ -1,0 +1,22 @@
+config ALI_STANDBY_TO_RAM
+	bool "Enable standby to ram totally(power chip except pmu but resume very fast)"
+	depends on ARM
+	default n
+	---help---
+	  This enabled standby-to-ram feature.
+	  
+menu "Buildin DTB"
+config ALI_BUILTIN_DTB
+	bool "Embed DTB in kernel image for ALI"
+	default n
+	help
+	  Embeds a device tree binary in the kernel image.
+
+config ALI_BUILTIN_DTB_NAME
+	string "Built in DTB for ALI"
+	depends on ALI_BUILTIN_DTB
+	help
+	  Set the name of the DTB to embed (leave blank to pick one
+	  automatically based on kernel configuration).
+endmenu
+

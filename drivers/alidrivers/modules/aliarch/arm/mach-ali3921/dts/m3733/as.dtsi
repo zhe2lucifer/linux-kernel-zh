@@ -1,0 +1,142 @@
+/{
+	compatible = "ali,3735";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	interrupt-parent=<&gic>;
+	
+	m3735_clk: m3735_clk@18000070 {
+			#clock-cells = <1>;
+			compatible = "alitech,m3735-clk";
+			reg = <0x18000070 0x8 0x18000078 0x8>;
+			reg-names = "strap_pin_reg", "clk_ctrl_reg";
+	};
+	otp: otp@0x18042000 {
+			compatible = "alitech,otp";
+			reg = <0x18042000 0x508>;
+			/*kdf_root = <0>;*/
+			status = "okay";
+			/* cell
+			 * 0: OTP address,
+			 * 1: first bit position,
+			 * 2: number of bits
+			 */
+			#otp-cells = <3>;
+	};
+ universal_key@0{
+     compatible = "alitech,universal_key";
+     offset = <0x00001900>;
+  };
+	see_bus@0 {
+		compatible = "alitech,see-bus", "simple-bus";
+
+		reg = <0x0 0x100>;		/* specify RPC shared memory
+						 * subsection here */
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		DSC@0 {
+			compatible = "alitech,dsc";
+			//clocks = <&cap210_clks_gate1 18>;
+			clock-names = "dsc_clk";
+			reg = <0>;
+			dev-index = <0>;
+		};
+
+		TRNG@1 {
+			compatible = "alitech,trng";
+			reg = <1>;
+		};
+
+		KL@2 {
+			compatible = "alitech,kl";
+			//clocks = <&cap210_clks_gate1 16>;
+			clock-names = "kl_clk";
+			reg = <2>;
+			fixed-addr-mode-otp	= <&otp 0x03 14 1>;
+			fixed-engine-mode-otp = <&otp 0xdc 7 1>;
+			one-kl-one-engine-otp = <&otp 0x8c 8 1>;
+			disable-kdf-otp = <&otp 0x8c 4 1>;
+
+			kl_0 {
+				dev-index			= <0>;			/* /dev/kl/kl0 and /dev/kl/etsi0 */
+				root-key-addr		= <0x4d>;		/* selects root key index 0x4d */
+
+				level-sel-otp		= <&otp 0x03 14 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 18 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <4>;			/* generates keys for CSA2 in fixed engine mode */
+				one-kl-one-engine-algo	= <4>;		/* generates keys for CSA2 in one kl one engine mode */
+			};
+			kl_1 {
+				dev-index			= <1>;			/* /dev/kl/kl1 and /dev/kl/etsi1 */
+				root-key-addr		= <0x51>;		/* selects root key index 0x51 */
+
+				level-sel-otp		= <&otp 0x03 14 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 18 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <0 2>;		/* can generate keys for AES and TDES in fixed engine mode */
+				one-kl-one-engine-algo	= <0>;		/* generates keys for AES in one kl one engine mode */
+			};
+			kl_2 {
+				dev-index			= <2>;			/* /dev/kl/kl2 and /dev/kl/etsi2 */
+				root-key-addr		= <0x55>;		/* selects root key index 0x55 */
+
+				level-sel-otp		= <&otp 0xdc 14 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 19 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <0 2>;		/* can generate keys for AES and TDES in fixed engine mode */
+				one-kl-one-engine-algo	= <2>;		/* generates keys for TDES in one kl one engine mode */
+			};
+			kl_3 {
+				dev-index			= <3>;			/* /dev/kl/kl3 and /dev/kl/etsi3 */
+				root-key-addr		= <0x64>;		/* selects root key index 0x64 */
+
+				level-sel-otp		= <&otp 0xdc 16 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 21 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <5>;		/* can generate keys for CSA3 in fixed engine mode */
+				one-kl-one-engine-algo	= <5>;		/* generates keys for CSA3 in one kl one engine mode */
+			};
+
+			kl_4 {
+				dev-index			= <4>;			/* /dev/kl/kl4 and /dev/kl/etsi4 */
+				root-key-addr		= <0x60>;		/* selects root key index 0x60 */
+
+				level-sel-otp		= <&otp 0xdc 14 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 19 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <0 2>;		/* can generate keys for AES and TDES in fixed engine mode */
+				one-kl-one-engine-algo	= <2>;		/* generates keys for TDES in one kl one engine mode */
+			};
+
+			kl_5 {
+				dev-index			= <5>;			/* /dev/kl/kl5 and /dev/kl/etsi5 */
+				root-key-addr		= <0x59>;		/* selects root key index 0x59 */
+
+				level-sel-otp		= <&otp 0xdc 16 2>;	/* defines if this instance has 1, 2 or 3 levels */
+				level-5-enable-otp	= <&otp 0x03 21 1>;	/* set if this instance has 5 levels */
+
+				fixed-engine-algos	= <5>;		/* can generate keys for CSA3 in fixed engine mode */
+				one-kl-one-engine-algo	= <5>;		/* generates keys for CSA3 in one kl one engine mode */
+			};
+		};
+
+		SCR@3 {
+			compatible = "alitech,scr";
+			//clocks = <&cap210_clks_gate1 15>;
+			clock-names = "scramble_clk";
+			reg = <3>;
+			dev-index = <1>;
+		};
+
+		SHA@4 {
+			compatible = "alitech,sha";
+			reg = <4>;
+		};
+
+		CRC32@5 {
+			compatible = "alitech,crc32";
+			reg = <5>;
+		};
+	};
+};

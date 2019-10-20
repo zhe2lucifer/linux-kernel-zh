@@ -1,0 +1,81 @@
+VERSION=r7p0
+COMPILE_MODE=debug
+#COMPILE_MODE=release
+UMP_MODE=1
+ALI_GPU_POLICY=GU
+#ALI_GPU_POLICY=DFS
+DT_MODE=1
+
+
+CONFIG=$VERSION-$COMPILE_MODE
+
+if [ $UMP_MODE == "1" ]; then
+CONFIG+=-ump
+fi
+
+if [ $ALI_GPU_POLICY == "DFS" ]; then
+	_DVFS=1
+	_GPU_UTILIZATION=0
+	CONFIG+=-dfs
+else
+	_DVFS=0
+	_GPU_UTILIZATION=1
+	CONFIG+=-gu
+fi
+
+if [ $DT_MODE == "1" ]; then
+CONFIG+=-dt
+fi
+
+
+###FPGA_linux test
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/linux-linaro-3.4-rc3-2012.04-0_USB256
+
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/S3922_FPGA/rosetop/rose-linux/
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/S3922_FPGA/rosetop_patch/rose-linux/
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/S3922_FPGA/rosetop_linux46/rose-linux/
+
+
+##ZHA_SDK 
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/buildroot_M3755_1118/output/build/linux-PDK2.0-20161118
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/buildroot_M3755_0323/output/build/linux-PDK2.0-20170322
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/buildroot_S3922C_7_0_20170803/output/build/linux-PDK2.0.0-20170729
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/buildroot_M3733_6_5_20170801/output/build/linux-PDK1.12.0-20170726A
+
+#KERNEL_PATH=~/buildroot_C3922_board_test_20171019/output/build/linux-PDK2.1.0-20171019A-C3922-board-test
+
+#KERNEL_PATH=~/buildroot_S3922C_7_0_0_15_android_8_20171026/output/build/linux-PDK2.0.0-ANDROID-20171009A
+KERNEL_PATH=~/buildroot_C3922_7_x_20171218/output/build/linux-PDK2.2.0-20171215
+
+##PDK
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/PDK_1_6_6_1125_test/linux/kernel/kernel/build/linux-3.12.20
+
+#KERNEL_PATH=/tpsa112/usrhome/arthur.chen/Linux_Env/C3921/PDK1.6.2/linux/kernel/kernel/build/linux-linaro-3.4-rc3
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/PDK_1.6.2_007_20141129_Dongle_gator/linux/kernel/kernel/build/linux-linaro-3.4-rc3
+
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/PDK1.6.2_tiger_20170725/linux/kernel/kernel/build/linux-linaro-3.4-rc3
+
+#toolchain
+#export CROSS_COMPILE=/opt/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+#export CROSS_COMPILE=~/buildroot_S3922C_7_0_20170803/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+#export CROSS_COMPILE=~/buildroot_C3922_board_test_20171019/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+#export CROSS_COMPILE=~/buildroot_S3922C_7_0_0_15_android_8_20171026/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+export CROSS_COMPILE=~/buildroot_C3922_7_x_20171218/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+
+
+
+echo CONFIG=$CONFIG
+echo KERNEL_PATH=$KERNEL_PATH
+
+echo input_command=$1
+
+
+
+#make BUILD=$COMPILE_MODE USING_UMP=$UMP_MODE USING_PROFILING=1 MALI_PLATFORM=arm TARGET_PLATFORM=_ali KDIR=$KERNEL_PATH USING_DT=0
+make $1 BUILD=$COMPILE_MODE USING_UMP=$UMP_MODE USING_PROFILING=0 USING_DVFS=$_DVFS USING_GPU_UTILIZATION=$_GPU_UTILIZATION MALI_PLATFORM=arm_ali KDIR=$KERNEL_PATH USING_DT=$DT_MODE
+#make BUILD=$COMPILE_MODE USING_UMP=$UMP_MODE  USING_DVFS=0 USING_GPU_UTILIZATION=1 MALI_PLATFORM=arm_ali KDIR=$KERNEL_PATH 
+
+if [ -f ./mali.ko ]; then
+	echo compile ok!
+	cp ./mali.ko ./mali-$CONFIG.ko
+fi	

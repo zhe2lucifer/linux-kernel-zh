@@ -1,0 +1,11 @@
+#
+# Makefile for the kernel DVB device drivers.
+#
+
+obj-$(CONFIG_ALI_RT5370_WIFI) += rt5370sta.o
+
+rt5370sta-objs += rt5370sta_dep.o
+
+$(obj)/rt5370sta_dep.o:
+	cp $(obj)/rt5370sta.bin $(obj)/rt5370sta_dep.o
+

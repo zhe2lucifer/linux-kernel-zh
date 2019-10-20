@@ -1,0 +1,56 @@
+*** This is document usage for nor flash protect testing ***
+                                        HankChou 2017/02/03
+
+1. Compile the test file:
+mipsel-linux-gnu-gcc mtd_lock.c -o mtd_lock
+mipsel-linux-gnu-gcc mtd_write.c -o mtd_write
+
+2. Copy to target:
+cp mtd_lock mtd_write $(output)/target
+
+3. Testing Command(Supports your nor flash mtd partition is mtdx):
+    i. Lock flash:
+        ./mtd_lock -p [path] -s [start] -l [length]
+        success with "ret:0"
+        failed with dead lock(while loop)
+            [for example] (Lock from 0 to 64KB):
+            ./mtd_lock -p /dev/mtdx -s 0 -l 65536
+            
+    ii. Unlock flash:
+        ./mtd_lock -p [path] -u -s [start] -l [length]
+        success with "ret:0"
+        failed with "ret:<0"
+            [for example] (Unlock from 0 to 64KB):
+            ./mtd_lock -p /dev/mtdx -u -s 0 -l 65536
+    iii. Check partition is lock or not:
+        ./mtd_lock -p [path] -i -s [start] -l [length]
+        lock with "ret:1"
+        without lock with "ret:0"
+            [for example] (Check from 0 to 64KB):
+            ./mtd_lock -p /dev/mtdx -i -s 0 -l 65536
+    
+    iv. Write to nor flash:
+        ./mtd_write -p [path] -i [index of block]
+        write success with "write success!"
+        write failed with "compare failed..."
+            [for example] (Write to 0th block):
+            ./mtd_write -p /dev/mtdx -i 0
+
+4. Test scenario(Supports your nor flash mtd partition is mtdx):
+    [warning] Before this test, you should know your nor flash will be erase.
+
+    [testing 0-128KB]
+    ./mtd_lock -p /dev/mtdx -s 0 -l 131072          --> ret:0
+    ./mtd_lock -p /dev/mtdx -i -s 0 -l 131072       --> ret:1
+    ./mtd_write -p /dev/mtdx -i 0                   --> compare failed...
+    ./mtd_write -p /dev/mtdx -i 1                   --> compare failed...
+    ./mtd_write -p /dev/mtdx -i 2                   --> compare failed...
+    
+    ./mtd_lock -p /dev/mtdx -u -s 0 -l 131072       --> ret:0
+    ./mtd_lock -p /dev/mtdx -i -s 0 -l 131072       --> ret:0
+    ./mtd_write -p /dev/mtdx -i 0                   --> write success
+    ./mtd_write -p /dev/mtdx -i 1                   --> write success
+    ./mtd_write -p /dev/mtdx -i 2                   --> write success
+    
+    
+    

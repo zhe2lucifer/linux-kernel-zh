@@ -1,0 +1,41 @@
+/include/ "ali_3505x.dtsi"
+
+/ {
+	clock-frequency = <0>;
+
+	soc {
+		bus-frequency = <0>;
+		pll: oscillator {
+			clock-frequency = <0>;
+		};
+
+		cpu_clk: clkdiv_cpu {
+			compatible = "fixed-factor-clock";
+			#clock-cells = <0>;
+			clocks = <&pll0>;
+			clock-output-names = "cpu_clk";
+		};
+
+		bus_clk: clkdiv_bus {
+			compatible = "fixed-factor-clock";
+			#clock-cells = <0>;
+			clocks = <&pll0>;
+			clock-output-names = "ahb_bus";
+		};
+
+		/* definition of all iomux */
+		iomux: iomux@ {
+			compatible = "ali_tech,3515_iomux";
+			#gpio-range-cells = <3>;
+			reg = <0xFF10601c 0x4>;
+			status = "okay";
+		};
+
+		/* definition of all GPIO controllers */
+		gpio {
+			compatible = "ali_tech,3515_gpio";
+			reg = <0xb8000000 0x1000>;
+			status = "okay";
+		};
+	};
+};

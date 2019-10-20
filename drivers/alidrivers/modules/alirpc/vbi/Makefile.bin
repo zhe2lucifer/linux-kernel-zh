@@ -1,0 +1,11 @@
+#
+# Makefile for the ali Remote Process Call hld decv driver
+#
+
+obj-$(CONFIG_RPC_HLD_VBI)        += ali_rpc_hld_vbi.o
+
+ali_rpc_hld_vbi-objs += ali_rpc_hld_vbi_dep.o
+
+$(obj)/ali_rpc_hld_vbi_dep.o:
+	cp $(obj)/ali_rpc_hld_vbi.bin $(obj)/ali_rpc_hld_vbi_dep.o
+

@@ -1,0 +1,10 @@
+
+/ {
+	chosen {
+		name = "chosen";
+		bootargs = "ubi.mtd=7 root=ubi0:rootfs rootfstype=ubifs rootflags=sync rw init=/init androidboot.console=ttyS0 mtdparts=ali_nand:2M@0M(bootenv),8M@2M(deviceinfo),8M@10M(bootmedia),4M@18M(seebl),8M@22M(see),16M@30M(kernel),2M@46M(ae),128M@48M(rootfs),24M@176M(userfs1)";
+		bootargs_recover = "ubi.mtd=7 root=ubi0:rootfs rootfstype=ubifs rootflags=sync rw init=/init androidboot.console=ttyS0 mtdparts=ali_nand:2M@0M(bootenv),8M@2M(deviceinfo),8M@10M(bootmedia),4M@18M(seebl),8M@22M(see),16M@30M(kernel),2M@46M(ae),128M@48M(rootfs),24M@176M(userfs1)";
+		stdout-path = "serial0:115200n8";
+	};
+};
+

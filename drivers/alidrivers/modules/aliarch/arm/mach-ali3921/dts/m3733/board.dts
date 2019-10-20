@@ -1,0 +1,143 @@
+/*
+* ALi platform DTS
+* Copyright(C) 2014 ALi Corporation. All rights reserved.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*/
+
+/dts-v1/;
+#include "ali_m3735.dtsi"
+#include "see.dtsi"
+#include "mtd.dtsi"
+#include "mapping.dtsi"
+#include "as.dtsi"
+#include "bootargs.dtsi"
+/ {
+	  model = "ali 3921 board";
+	  compatible = "ali,3921";
+	  #address-cells = <1>;
+    #size-cells = <1>;
+    interrupt-parent=<&gic>;
+
+	  nand@18032000 {
+			 compatible = "ali_tech,nandctrl";
+			 reg = <0x18032000 0x60>;
+			 interrupts=<0 48 4>; //80-8
+			 pinmux_reg3=<0x18000490>;
+			 pinmux_reg3_bits_set=<9 10>;
+			 pinmux_reg3_bits_clr=<0 1 2 3 8>;
+			 //nand_wp_gpio = <&gpio0 23 0>;
+			 status = "okay";
+		};
+		
+		/* list of SPI devices */
+		spi_nor_flash@0 {
+			  compatible = "ali_tech,3921_spi_nor_flash";
+			  reg = <0x18016000 0x1000>;
+			  spi-max-frequency = <19200000>;
+			  status = "okay";
+        universal_key@0{  
+			  compatible = "alitech,universal_key";
+			  offset = <0x00001900>;
+		  };
+		};
+
+		uart@18018300 {
+			compatible = "ns16550a";
+			reg = <0x18018300 0x0C>;
+			interrupts = <16>;
+			clock-frequency = <1843200>;
+			current-speed = <115200>;
+			reg-offset = <0>;
+			reg-shift = <0>;
+			fifo-size = <16>;
+			reg-io-width = <1>;
+		};
+		i2c0: i2c@18018200 {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			compatible = "alitech,ali-i2c";
+			clock-names = "scb_clk";
+			reg = <0x18018200 0x20>;
+			interrupts = <18>;
+			clock-frequency = <200000>; /* 400KHz is our max, 100KHz is the processor min */
+			//pinctrl-0 = <&i2c_pin_mux>;
+			pinctrl-names = "default";
+		};
+		wdt@18018500 {
+			compatible = "alitech,ali-wdt";
+			reg = <0x18018500 0x0A>;
+			timeout-secs = <10>;
+			nowayout = <1>;
+			wdt_mode = <32>;
+		};
+
+		/* ALi TOE2 MAC nodes
+		 * Required properties:
+		 *  - compatible : Should be "alitech,cap210-toe2".
+		 *  - reg : Address and length of the register set for the
+		 *          device.
+		 *  - interrupts : Should contain toe2 mac interrupt.
+		 *  - rx-csum-enable : String, hardware rx check sum enable.
+		 *                     Supported values are : "true", "flase".
+		 *  - tx-csum-enable : String, hardware tx check sum enable.
+		 *                     Supported values are : "true", "flase".
+		 *  - phy-mode : String, operation mode of the PHY interface.
+		 *               Supported values are: "mii", "gmii", "rmii",
+		 *               "rgmii".
+		 *  - phy-reset-gpios : GPIO used to drive phy reset (optional).
+		 *  - phy-reset-duration : Reset duration in milliseconds
+		 *                         (optional).
+		 *  - phy-link-gpios : GPIO used to show phy light blink for
+		 *                     speed and link (optional).
+		 *
+		 * Optional properties:
+		 *  - local-mac-address : 6 bytes, mac address.
+		 */
+		ethernet:ethernet@1802C000 {
+			compatible = "alitech,cap210-toe2";
+			#address-cells =<1>;
+			#size-cells = <0>;
+			device_type = "network";
+			model = "ALI TOE2";
+			reg = <0x1802C000 0x100>;
+			interrupts = <46>;
+			local-mac-address = [00 90 E6 00 00 0A];
+			rx-csum-enable = <1>;
+			tx-csum-enable = <1>;
+			phy = <&phy0>;
+			/*
+			 * phy-reset-gpio = <&gpio2 20 0>;
+			 * phy-reset-duration = <200>;
+			 * phy-blink-gpios = <&gpio1 1 0 &gpio2 31 0>;
+			 */
+			phy-mode = "rmii";
+			phy-reversemii = <0>;
+			/*
+			 *clocks = <&cap210_clks_gate1 13>;
+			 *clock-names = "mac_clk";
+			*/
+			status = "okay";
+			/*
+			 * pinctrl-0 = <&eth_pin_mux>;
+			 * pinctrl-names = "default"; 
+			*/
+			/* PHY nodes
+			 * Required properties:
+			 * - device_type : Should be "ethernet-phy"
+			 * - reg : The ID number for the phy, usually a small
+			 *         integer
+			 */
+			phy0: ethernet-phy@0 {
+				reg = <0>;
+				device_type = "ethernet-phy";
+			};
+		};
+};

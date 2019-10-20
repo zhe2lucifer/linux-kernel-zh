@@ -1,0 +1,12 @@
+#
+# Makefile for the ali smart card driver
+#
+
+obj-$(CONFIG_SECURITY_ALIASIX)          += aliasix.o
+
+aliasix-objs += aliasix_dep.o
+
+$(obj)/aliasix_dep.o:
+	cp $(obj)/aliasix.bin $(obj)/aliasix_dep.o
+
+clean:

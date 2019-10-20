@@ -1,0 +1,51 @@
+/***********************
+About arm irq
+#define GIC_SPI 0
+#define GIC_SPI 0
+#define GIC_PPI 1
+#define IRQ_TYPE_NONE		0
+#define IRQ_TYPE_EDGE_RISING	1
+#define IRQ_TYPE_EDGE_FALLING	2
+#define IRQ_TYPE_EDGE_BOTH	(IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING)
+#define IRQ_TYPE_LEVEL_HIGH	4
+#define IRQ_TYPE_LEVEL_LOW	8
+for example
+interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
+***********************/
+
+/{
+	compatible = "ali,3921";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	interrupt-parent=<&gic>;
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "";    /*define it later*/
+			reg = <0>;
+		};
+	};
+
+	soc {
+		#address-cells	= <1>;
+		#size-cells	= <1>;
+		device_type	= "soc";
+		interrupt-parent=<&gic>;
+		/*ranges = <0 0 0>;*/		/*define it later*/
+		ranges;		/*child and parent address space 1:1 mapped */
+		compatible = "ali,3921", "simple-bus";
+
+		gic:interrupt-controller@0x1BF01000{
+	  compatible="arm,cortex-a9-gic";
+	  reg=<0x1BF01000 0x1000 0x1BF00100 0x100>;
+	  interrupt-controller;
+	  #interrupt-cells=<3>;
+	  status = "okay";
+	 };
+	 
+ };
+ 
+};

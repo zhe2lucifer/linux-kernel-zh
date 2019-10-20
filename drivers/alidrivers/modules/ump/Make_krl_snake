@@ -1,0 +1,46 @@
+VERSION=r7p0
+COMPILE_MODE=debug
+#COMPILE_MODE=release
+
+CONFIG=$VERSION-$COMPILE_MODE
+###FPGA_linux test
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/linux-linaro-3.4-rc3-2012.04-0_USB256
+
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/S3922_FPGA/rosetop/rose-linux/
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/S3922_FPGA/rosetop_patch/rose-linux/
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/S3922_FPGA/rosetop_linux46/rose-linux/
+
+##PDK for ALiDroid 
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/PDK1.6.2_tiger_20170725/linux/kernel/kernel/build/linux-linaro-3.4-rc3
+
+##buildroot 
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/buildroot_M3755_0509/output/build/linux-PDK2.0.0-20170508B
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/buildroot_S3922C_20170706A/output/build/linux-FPGA_C3922_C3702_20170706B
+#KERNEL_PATH=/tpsa011/usrhome/yashi.huang/buildroot_S3922C_7_0_20170803/output/build/linux-PDK2.0.0-20170729
+#KERNEL_PATH=/tpsa112/usrhome/yashi.huang/buildroot_C3922_board_test_20171019/output/build/linux-PDK2.1.0-20171019A-C3922-board-test
+#KERNEL_PATH=~/buildroot_S3922C_7_0_0_15_android_8_20171026/output/build/linux-PDK2.0.0-ANDROID-20171009A
+KERNEL_PATH=~/buildroot_C3922_7_x_20171201/output/build/linux-PDK2.2.0-20171201A
+
+
+
+#toolchain
+#export CROSS_COMPILE=/opt/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+#export CROSS_COMPILE=~/buildroot_S3922C_7_0_20170803/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+#export CROSS_COMPILE=~/buildroot_C3922_board_test_20171019/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+export CROSS_COMPILE=~/buildroot_S3922C_7_0_0_15_android_8_20171026/output/host/opt/ext-toolchain/bin/arm-linux-gnueabihf-
+
+echo KERNEL_PATH=$KERNEL_PATH
+echo input_command=$1
+
+echo CROSS_COMPILE=$CROSS_COMPILE
+
+
+
+CONFIG=ALI-config KDIR=$KERNEL_PATH make $1
+
+
+
+if [ -f ./ump.ko ]; then
+	echo compile ok!
+	cp ./ump.ko ./ump-$CONFIG.ko
+fi	

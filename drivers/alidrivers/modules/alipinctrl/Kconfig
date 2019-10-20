@@ -1,0 +1,4 @@
+config PINCTRL_ALI
+	bool "Pinctrl driver for ALi SoCs"
+	help
+	  Say yes here to enable pinctrl controler support for ALi SoCs.

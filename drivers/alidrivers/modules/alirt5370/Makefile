@@ -1,0 +1,1 @@
+obj-$(CONFIG_ALI_RT5370_WIFI)	  +=os/linux/

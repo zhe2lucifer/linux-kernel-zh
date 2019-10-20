@@ -1,0 +1,205 @@
+ALi SoCs pin controller
+===================================
+
+1 Required properties for root node of pin controller
+----------------------------------------------------------------------------
+
+- compatible: should be "alitech,pinctrl".
+- reg: should contain the physical address and size of the pin controller.
+- pins: This is pin name list for this pin controller's pads. This property
+  is use to dynamically create pin database which also contains all GPIO pins.
+  Pin number from 0 to "last pin".
+  
+  
+2 Sub nodes of pin controller
+----------------------------------------------------------------------------
+
+There are three sub nodes inside root node of pin controller: groups,
+gpio-groups and functions, they don't have property which only include child
+ nodes.
+
+- groups: Only contain child nodes, each child describes a pin group.
+- gpio-groups: Only contain child nodes, each child describes a pin group for
+  gpio range.
+- functions: Only contain child nodes, each child describes a function.
+
+
+3 Pin group definition
+----------------------------------------------------------------------------
+
+Child nodes inside "groups" are named as "group1", "group2", "group3" ....
+depend on their order, Each child describes a pin group. There are three
+properties inside each pin group.
+
+Required property:
+- name: This pin group name.
+- pins: pins list for this pin group.
+- reg-offset: Register offset from Pin controller base address with byte unit,
+  to achieve a pin group maybe need to set more than one registers, so no just
+  one offset.
+- reg-mask: Bit mask for selected register operating without bit-shift. The
+  corresponding value should be write to selected register by "reg-offset"
+  is "field-value-X", it is defined in function node, please refer to
+  section 5.
+
+examples:
+
+	group1 {
+		name = "first_group";
+		pins = < 34 45 >;
+		reg-offset = <0 4>;      /* we use registers at offsets 0 and
+					    4 */
+		reg-mask   = <0xF 0x10>; /* we use bits 0-3 in register at
+					    offset 0 and bit 4 in register at
+					    offset 4 */
+	};
+
+
+4 GPIO pin group definition
+----------------------------------------------------------------------------
+
+Child nodes inside "gpio-groups" are named as "gpio-group1", "gpio-group2",
+"gpio-group3", which depend on their order, each child describes a gpio pin
+group, each gpio pin group is corresponding to a gpio bank. gpio pin group
+provides no-linear mapping for gpio to pin as in
+linux/Documentation/pinctrl.txt. There are three properties inside each
+gpio pin group.
+
+Required property:
+- name: This pin group name.
+- pins: List all pins for this gpio banks, the order depends on gpio enable
+  register.
+- reg: Define physical address and size of gpio enable register for this gpio
+  bank.
+
+examples:
+
+	gpio-groups {
+		gpio-group1 {
+			name = "GPIO_A";
+	                pins = <0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+				15 16 17 18 19 20 21 22 23 24 25 26 17 28 29
+				30 31>;
+			reg = <0x18000430 0x0>;
+		};
+		gpio-group2 {
+			name = "GPIO_B";
+	                pins = <32 33 34 35 36 37 38 39 40 41 42 43 44 45 46
+				47 48 49 50 51 52 53 54 55 56 57 58 59 60 61
+				62 63>;
+			reg = <0x18000434 0x4>;
+		};
+		...
+	};
+   
+   
+5 Function definition
+----------------------------------------------------------------------------
+
+Child nodes inside "functions" are named as "function1", "function2",
+"function3", which depend on their order, each child describes a function,
+each function maybe contain one or more pin groups depend on hardware.
+
+Required properties for function:
+- name: Function name.
+- groups: Pin group list.
+- field-value-0: Which are written to pin controller' registers to achieve the
+  first pin group " first_group". please refer to above section 3.
+- field-value-1: Which are written to pin controller' registers to achieve the
+  second pin group "second_group".
+- field-value-X: Which are written to pin controller' registers to achieve the
+  Xth pin group.
+
+examples:
+
+	functions {
+		function1 {
+			name = "first_function";
+			/* The order of this list defines the respective X in
+			   field-value-X */
+	                groups = "first_group", "second_group";
+			/* This is the list of all register values for
+			   first_group: set bits 0-2 in register 0 and bit 4
+			   in register 4 */
+		        field-value-0 = <0x7 0x10>;
+			/* This is the list of all register values for
+			   second_group: set bit 1 in register at offset 12 */
+			field-value-1 = <0x2>;
+	            };
+		...
+	};
+
+6 Example
+----------------------------------------------------------------------------
+
+/ {
+	pinctrl@0x18000088 {
+		compatible = "alitech,pinctrl";
+		reg = <0x18000088 0x>;
+		pins =  "XGPIO_0",            /* mux_GPIO_0    */
+			"XGPIO_1",            /* mux_GPIO_1    */
+	                "XGPIO_2",            /* mux_GPIO_2    */
+		        "XGPIO_3",            /* mux_GPIO_3    */
+			"XGPIO_4",            /* mux_GPIO_4    */
+	                "XGPIO_5",            /* mux_GPIO_5    */
+		        "XGPIO_6",            /* only GPIO_6   */
+			"XPMU_GPIO_3",        /* mux_GPIO_7    */
+		...
+		groups {
+			group1 {
+				name = "first_group";
+				pins = <34 35>;
+				reg-offset = <0 4>; /* we use registers at
+						     offsets 0 and 4 */
+		                reg-mask = <0xF 0x10>; /* we use bits 0-3 in
+							register at offset 0
+							and bit 4 in register
+							at offset 4 */
+			};
+			group2 {
+				name = "second_group";
+				pins = <28 29 30 31>;
+				reg-offset = <12>; /* we use register at
+						    offset 12 */
+				reg-mask = <0x7>; /* we use bits 0-2 in
+					           register at offset 12 */
+			};
+			...
+		};
+		gpio-groups {
+			gpio-group1 {
+		                name = "GPIO_A";
+			        pins = <0  1  2  3  4  5  6  7  8  9 10 11 12
+					13 14 15 16 17 18 19 20 21 22 23 24 25
+					26 17 28 29 30 31>;
+				reg = <0x18000430 0x0>;
+			};
+			gpio-group2 {
+				name = "GPIO_B";
+			        pins = <32 33 34 35 36 37 38 39 40 41 42 43
+					44 45 46 47 48 49 50 51 52 53 54 55
+					56 57 58 59 60 61 62 63>;
+				reg = <0x18000434 0x4>;
+			};
+			...
+		};
+
+		functions {
+			function1 {
+				name = "first_function";
+				/* the order of this list defines the
+				   respective X in field-value-X */
+		                groups = "first_group", "second_group";
+				/* This is the list of all register values for
+				   first_group: set bits 0-2 in register 0 and
+				   bit 4 in register 4 */
+			        field-value-0 = <0x7 0x10>;
+				/* This is the list of all register values for
+				   second_group: set bit 1 in register at
+				   offset 12 */
+				field-value-1 = <0x2>;
+			};
+			...
+		};
+	};
+};

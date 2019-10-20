@@ -1,0 +1,49 @@
+* Ali key ladder
+
+Required properties :
+- compatible : should be "alitech,kl"
+- reg : unique index within the see_bus
+- interrupts : <IRQ> where IRQ is the interrupt number
+- clocks : defines the kl pin number of the clock gating
+- clock-names : should be "kl_clk"
+- fixed-addr-otp : OTP allowing to activated fixed OTP address
+- fixed-engine-otp : OTP allowing to activate fixed engine
+- one-kl-one-engine-otp : OTP allowing to select the one key ladder per engine
+- disable-kdf-otp : OTP allowing to disable the KDF hardware
+
+ For each key ladder modules:
+ - dev-index : index used for the character device (/dev/kl and /dev/etsi)
+ - root-key-addr : select the root key index
+ - level-sel-otp : defines the number of level (1,2 or 3 levels)
+ - level-5-enable-otp : allows to enable 5 levels
+ - fixed-engine-algos : defines allowed algo(s) in fixed-engine mode
+ - one-kl-one-engine-algo : defines allowed algo(s) in one key ladder per engine
+
+ algo: 0 for AES, 1 for DES, 2 for TDES, 3 for CSA1, 4 for CSA2 and 5 for CSA3
+
+ Example:
+	ca_kl {
+		compatible = "alitech,kl";
+		reg = <2>;
+		fixed-addr-mode-otp = <&otp 0x3 14 1>;
+		fixed-engine-mode-otp = <&otp 0xdc 7 1>;
+		one-kl-one-engine-otp = <&otp 0x8c 8 1>;
+		disable-kdf-otp = <&otp 0x8c 4 1>;
+
+		kl_0 {
+			dev-index = <0>;
+			root-key-addr = <0x4d>;
+			level-sel-otp = <&otp 0x3 18 1>;
+			level-5-enable-otp = <&otp 0x3 18 1>;
+			fixed-engine-algos = <4>;
+			one-kl-one-engine-algo = <4>;
+		};
+		kl_1 {
+			dev-index = <1>;
+			root-key-addr = <0x51>;
+			level-sel-otp = <&otp 0x3 15 2>;
+			level-5-enable-otp = <&otp 0x3 18 1>;
+			fixed-engine-algos = <0 2>;
+			one-kl-one-engine-algo = <0>;
+		};
+	};

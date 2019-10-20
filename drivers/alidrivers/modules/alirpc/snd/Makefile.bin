@@ -1,0 +1,11 @@
+#
+# Makefile for the ali Remote Process Call hld decv driver
+#
+
+obj-$(CONFIG_RPC_HLD_SND)        += ali_rpc_hld_snd.o
+
+ali_rpc_hld_snd-objs += ali_rpc_hld_snd_dep.o
+
+$(obj)/ali_rpc_hld_snd_dep.o:
+	cp $(obj)/ali_rpc_hld_snd.bin $(obj)/ali_rpc_hld_snd_dep.o
+

@@ -1,0 +1,6 @@
+#
+# Makefile for the ali nand driver
+#
+
+obj-$(CONFIG_ALI_SPI)          += alispi.o
+#alispi-y := ali_spi.o

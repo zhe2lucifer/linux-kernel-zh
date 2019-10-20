@@ -1,0 +1,11 @@
+#
+# Makefile for the ali Remote Process Call pe driver(drivers/rpc/pe/Makefile)
+#
+
+obj-$(CONFIG_RPC_PE)         += ali_rpc_pe.o
+
+ali_rpc_pe-objs += ali_rpc_pe_dep.o
+
+$(obj)/ali_rpc_pe_dep.o:
+	cp $(obj)/ali_rpc_pe.bin $(obj)/ali_rpc_pe_dep.o
+

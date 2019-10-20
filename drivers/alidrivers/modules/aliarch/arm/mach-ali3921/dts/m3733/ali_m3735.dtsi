@@ -1,0 +1,92 @@
+/{
+	compatible = "ali,3735";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	interrupt-parent=<&gic>;
+
+	board {
+		label = "ALi-dev-board";
+	};
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "";    /*define it later*/
+			reg = <0>;
+		};
+	};
+	soc {
+		#address-cells	= <1>;
+		#size-cells	= <1>;
+		device_type	= "soc";
+		interrupt-parent=<&gic>;
+		/*ranges = <0 0 0>;*/		/*define it later*/
+		ranges;		/*child and parent address space 1:1 mapped */
+		compatible = "ali,3921", "simple-bus";
+
+		gic:interrupt-controller@0x1BF01000{
+	  compatible="arm,cortex-a9-gic";
+	  reg=<0x1BF01000 0x1000 0x1BF00100 0x100>;
+	  interrupt-controller;
+	  #interrupt-cells=<3>;
+	  status = "okay";
+	 };
+	 intc0: intc@0x18000030 {
+			compatible="alitech,generic-intc";
+			reg = <0x18000030 0x14>;
+			interrupt-controller;
+			#interrupt-cells=<1>;
+			interrupt-parent = <&gic>;
+			interrupts = <3>;
+		};
+	 gpio0: gpio@18000044 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x18000044 0x20>;
+			interrupts = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <32>;
+			interrupt-parent=<&intc0>;
+			interrupt-controller;
+			//gpio-ranges = <&pinctrl 0 0 32>;
+			#interrupt-cells = <1>;
+		};
+		gpio1: gpio@180000C4 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x180000C4 0x20>;
+			interrupts = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <32>;
+			interrupt-parent=<&intc0>;
+			interrupt-controller;
+			//gpio-ranges = <&pinctrl 0 32 32>;
+			#interrupt-cells = <1>;
+		};
+		gpio2: gpio@180000E4 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x180000E4 0x20>;
+			interrupts = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <32>;
+			interrupt-parent=<&intc0>;
+			interrupt-controller;
+			//gpio-ranges = <&pinctrl 0 64 32>;
+			#interrupt-cells = <1>;
+		};
+		gpio3: gpio@18000344 {
+			compatible = "alitech,ali-gpio";
+			reg = <0x18000344 0x20>;
+			interrupts = <0>;
+			gpio-controller;
+			#gpio-cells = <2>;
+			ngpio = <1>;
+			interrupt-parent=<&intc0>;
+			interrupt-controller;
+			//gpio-ranges = <&pinctrl 0 97 1>;
+			#interrupt-cells = <1>;
+		};
+ };
+};

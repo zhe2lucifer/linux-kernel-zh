@@ -1,0 +1,484 @@
+/*
+* ALi platform DTS
+* Copyright(C) 2014 ALi Corporation. All rights reserved.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*/
+
+/dts-v1/;
+/include/ "ali_3505.dtsi"
+/include/ "see.dtsi"
+/include/ "mapping.dtsi"
+/ {
+	board {
+		label = "M3515-demo-board";
+	};
+
+	aliases {
+		serial0 = &uart0;
+	};
+
+	uart0:uart@0xB8018300{
+		compatible = "ns16550a";
+		reg = <0xB8018300 0x0C>;
+		clock-frequency	= <1843200>;
+		current-speed = <115200>;
+		reg-offset = <0>;
+		reg-shift = <0>;
+		fifo-size = <16>;
+		reg-io-width = <1>;
+	};
+	i2c0: i2c@0xB8018200 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		clock-names = "scb_clk";
+		reg = <0xB8018200 0x20>;
+		//interrupts = <18 >;
+		clock-frequency = <200000>; /* 400KHz is our max, 100KHz is the processor min */
+		pinctrl-names = "default";
+	};
+	i2c1: i2c@0xB8018700 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		clock-names = "scb_clk";
+		reg = <0xB8018700 0x20>;
+		//interrupts = <25>;
+		clock-frequency = <200000>; /* 400KHz is our max, 100KHz is the processor min */
+		pinctrl-names = "default";
+	};
+
+spi@1802E000 {
+		status = "okay";
+		/* NOR flash */
+		spi_flash@0 {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			compatible = "m25p80";
+			reg = <0>;
+			spi-max-frequency = <25000000>;
+			spi-cpol;
+			spi-cpha;
+			spi-rx-bus-width = <4>;
+		};
+
+		/* NAND flash */
+		spi_flash@1 {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			compatible = "gd5f";
+			reg = <1>;
+			spi-max-frequency = <25000000>;
+			spi-cpol;
+			spi-cpha;
+			spi-rx-bus-width = <4>;
+			/* the follow are the MTD partitions in NAND flash */
+			/* the follow are the MTD partitions in NAND flash */
+				bootenv {
+					reg = <0x00000000 0x00200000>;
+					loadaddr = <0xFFFFFFFF>;
+				};
+				deviceinfo {
+					reg = <0x00200000 0x0800000>;
+					loadaddr = <0xFFFFFFFF>;
+				};
+				bootmedia {
+					reg = <0x00A00000 0x00800000>;
+					loadaddr = <0xFFFFFFFF>;
+				};
+				seebl {
+					reg = <0x01600000 0x00400000>;
+					loadaddr = <0x85F80000>;
+				};
+				SEE {
+					reg = <0x01a00000 0x00800000>;
+					loadaddr = <0x04000200>;
+				};
+				kernel {
+					reg = <0x02200000 0x01000000>;
+					loadaddr = <0x80100000>;
+				};
+				rootfs {
+				reg = <0x03200000 0x3200000>;
+				loadaddr = <0x8aa3f040>;
+			};
+		};
+	};
+	soc {
+		interrupt-parent=<&intc>;
+
+		sd@18014000 {
+			compatible = "alitech,sd";
+			reg = <0x18014000 0x1000>;
+			clocks = <&cap210_clks_gate1 6>;
+			clock-names = "sdio_ctrl_clk";
+			bus-width = <4>;				
+			max-frequency = <99000000>;
+			cd = <&gpio2 20 0>;
+			cd-inverted;
+			wp = <&gpio0 2 0>;							
+			interrupts = <42>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			status = "okay";
+		};
+
+		emmc@18016000 {
+			compatible = "alitech,emmc";
+			reg = <0x18016000 0x1000>;
+			clocks = <&cap210_clks_gate1 5>;
+			clock-names = "emmc_ctrl_clk";
+			bus-width = <8>;				
+			max-frequency = <99000000>;
+			non-removable;
+			interrupts = <43>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			status = "okay";
+		};
+
+		nand@18032000 {
+			compatible = "ali_tech,nandctrl";
+			reg = <0xb8032000 0x60>;
+			interrupts=<56>;
+			pinmux_reg3=<0xb8000490>;
+			pinmux_reg3_bits_set=<9 10>;
+			pinmux_reg3_bits_clr=<0 1 2 3 8>;
+			nand_wp_gpio = <&gpio0 23 0>;
+			status = "okay";
+		};
+
+		/* list of SPI devices */
+		spi_nor_flash@0 {
+			compatible = "ali_tech,3515_spi_nor_flash";
+			reg = <0x18016000 0x1000>;
+			spi-max-frequency = <19200000>;
+			status = "okay";
+		};
+
+		spi@1802E000{
+			compatible = "alitech,spictrl";
+			reg = <0x1802E000 0xE0 0x1fc00000 0x1000
+				0x1ec00000 0x1000 0x18000220 0x4
+				0x18070000 0x4 0x18000088 0x4
+				0x18000430 0x4>;
+			interrupts=<43>;
+			status = "okay";
+		};
+
+		/* list of I2C devices */
+
+		/* ALi PinCtrl
+		 * Required properties:
+		 *  - compatible: must be "alitech,pinctrl-cap210"
+		 *  - reg: base address and size of pinmux control register
+		 *         area
+		 */
+		pinctrl: pinctrl@0x18000088 {
+			compatible = "alitech,pinctrl-cap210";
+			reg = <0x18000088 0x4 0x18000430 0x10>;
+			pctrl_i2c: func_i2c {
+				ali-pmx,groups = "i2c_sel";
+			};
+			pctrl_uart: func_uart {
+				ali-pmx,groups = "uart_sel",
+						 "uart_hw_sel";
+			};
+			pctrl_smc1: func_smc {
+				ali-pmx,groups = "smc1_sel",
+						 "smc2_sel",
+						 "smc2_ex_sel";
+			};
+			pctrl_spinor: func_spinor {
+				ali-pmx,groups = "spinor_sel",
+						 "spinor1_sel",
+						 "spinor2_sel";
+			};
+			pctrl_ci: func_ci {
+				ali-pmx,groups = "ci_sel";
+			};
+			pctrl_rgmii: func_rgmii {
+				ali-pmx,groups = "rgmii_sel";
+			};
+			pctrl_emmc: func_emmc {
+				ali-pmx,groups = "emmc_sel";
+			};
+			pctrl_sdio: func_sdio {
+				ali-pmx,groups = "sdio_sel";
+			};
+			pctrl_clkout: func_clkout {
+				ali-pmx,groups = "clkout_sel";
+			};
+
+			eth_pin_mux: eth_pin_mux {
+				ali-pmx,function = "func_rgmii";
+				ali-pmx,group = "rgmii_sel";
+			};
+		};
+
+		/* ALi TOE2 MAC nodes
+		 * Required properties:
+		 *  - compatible : Should be "alitech,cap210-toe2".
+		 *  - reg : Address and length of the register set for the
+		 *          device.
+		 *  - interrupts : Should contain toe2 mac interrupt.
+		 *  - rx-csum-enable : String, hardware rx check sum enable.
+		 *                     Supported values are : "true", "flase".
+		 *  - tx-csum-enable : String, hardware tx check sum enable.
+		 *                     Supported values are : "true", "flase".
+		 *  - phy-mode : String, operation mode of the PHY interface.
+		 *               Supported values are: "mii", "gmii", "rmii",
+		 *               "rgmii".
+		 *  - phy-reset-gpios : GPIO used to drive phy reset (optional).
+		 *  - phy-reset-duration : Reset duration in milliseconds
+		 *                         (optional).
+		 *  - phy-link-gpios : GPIO used to show phy light blink for
+		 *                     speed and link (optional).
+		 *
+		 * Optional properties:
+		 *  - local-mac-address : 6 bytes, mac address.
+		 */
+		ethernet@1802C000 {
+			compatible = "alitech,cap210-toe2";
+			#address-cells =<1>;
+			#size-cells = <0>;
+			device_type = "network";
+			model = "ALI TOE2";
+			reg = <0x1802C000 0x100>;
+			interrupts = <46>;
+			local-mac-address = [00 90 E6 00 00 0A];
+			rx-csum-enable = <1>;
+			tx-csum-enable = <1>;
+			phy = <&phy0>;
+			/*
+			 * phy-reset-gpio = <&gpio2 20 0>;
+			 * phy-reset-duration = <200>;
+			 * phy-blink-gpios = <&gpio1 1 0 &gpio2 31 0>;
+			 */
+			phy-mode = "rmii";
+			phy-reversemii = <0>;
+			/*
+			 *clocks = <&cap210_clks_gate1 13>;
+			 *clock-names = "mac_clk";
+			*/
+			status = "okay";
+			/*
+			 * pinctrl-0 = <&eth_pin_mux>;
+			 * pinctrl-names = "default"; 
+			*/
+			/* PHY nodes
+			 * Required properties:
+			 * - device_type : Should be "ethernet-phy"
+			 * - reg : The ID number for the phy, usually a small
+			 *         integer
+			 */
+			phy0: ethernet-phy@0 {
+				reg = <0>;
+				device_type = "ethernet-phy";
+			};
+		};
+
+		/* list of usb dwc3 devices */
+		usb2_phy: usbphy@0 {
+			compatible = "usb-nop-xceiv";
+			status = "okay";
+		};
+
+		usb3_phy: usbphy@1 {
+			compatible = "usb-nop-xceiv";
+			status = "okay";
+		};
+
+		usb_dwc3@1803A000 {
+			compatible = "alitech,dwc3";
+			reg = <0x1803A000 0x2000>;
+			clocks = <&cap210_clks_gate0 8>;
+
+			clock-names = "usb_clk";			
+			dma-limit-range = <0x00000000 0xFFFFFFFF>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges;
+			status = "okay";
+
+			dwc3@18030000 {
+				compatible = "synopsys,dwc3";
+				reg = <0x18030000 0xD000>;
+				interrupts = <37>;
+				usb-phy = <&usb2_phy &usb3_phy>;
+				status = "okay";
+			};
+		};
+		
+		wdt1@18018500 {
+			compatible = "alitech,cap210-wdt";
+			reg = <0x18018500 0x0A>;
+			clocks = <&wdt_clk>;
+			clock-names = "wdt_clk";
+			timeout-secs = <10>;
+			nowayout = <1>;
+			wdt_mode = <32>;
+		};
+		wdt2@18018510 {
+			compatible = "alitech,cap210-wdt";
+			reg = <0x18018510 0x0A>;
+			interrupts = <31>;
+			clocks = <&wdt_clk>;
+			clock-names = "wdt_clk";
+			timeout-secs = <10>;
+			nowayout = <1>;
+			wdt_mode = <16>;
+		};
+		clktest:clktest {
+			compatible = "alitech,clktest";
+			clocks = <&cap210_clks_gate0 0>;
+			clock-names = "ts_ip_clk";			
+		};
+		clocks {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges;
+			osc24M: osc24M {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <24000000>;
+				clock-output-names="osc24M";
+			};
+			wdt_clk:wdt_clk {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <27000000>;
+				clock-output-names="wdt_clk";
+			};
+			f100: f100 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <100000000>;
+				clock-output-names="f100";
+			};
+			f300: f300 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <300000000>;
+				clock-output-names="f300";
+			};
+			f400: f400 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <400000000>;
+				clock-output-names="f400";
+			};
+			f600: f600 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <600000000>;
+				clock-output-names="f600";
+			};
+			f266: f266 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <266000000>;
+				clock-output-names="f266";
+			};
+			f333: f333 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <333000000>;
+				clock-output-names="f333";
+			};
+			f533: f533 {
+				#clock-cells = <0>;
+				compatible = "fixed-clock";
+				clock-frequency = <533000000>;
+				clock-output-names="f533";
+			};
+			dpll: dpll@180004A4 {
+				#clock-cells = <0>;
+				compatible = "alitech,cap210-dpll-clk";
+				reg = <0x180004A0 0x4>;
+				clocks = <&osc24M>;
+				clock-frequency = <624000000>;
+				clock-output-names="dpll";
+			};
+			cap210_clk: cap210_clk@18000074 {
+				#clock-cells = <1>;
+				compatible = "alitech,cap210-clk";
+				reg = <0x18000074 0x4 0x1800007c 0x4>;
+				reg-names = "strap_pin_reg", "clk_ctrl_reg";
+				clocks = <&f100>, <&f300>, <&f400>,
+					 <&f600>, <&dpll>, <&f266>,
+					 <&f333>, <&f400>, <&f533>;
+				clock-output-names="see_clk",
+						   "cpu_clk",
+						   "dram_clk";
+			};
+			cap210_clks_gate0: cap210_clks_gate@18000060 {
+				#clock-cells = <1>;
+				compatible = "alitech,cap210-clks-gate";
+				reg = <0x18000060 0x4>;
+				gate-mask = <0x0FF80000>;
+				clock-output-names="ts_ip_clk", "scr1_clk", "scr2_clk", "tm_mod_0",
+					"wdt_clk_gate", "uart_clk", "scb_clk", "tm_mod_1", "usb_clk";
+				 
+			};
+			cap210_clks_gate1: cap210_clks_gate@18000064 {
+				#clock-cells = <1>;
+				compatible = "alitech,cap210-clks-gate";
+				reg = <0x18000064 0x4>;
+				gate-mask = <0x8A13F0EF>;
+				clock-output-names="bootrom_clk", "cert_ip_clk", "dsc_clk", "otp_ctrl_clk",
+					"sflash_ctrl_clk", "emmc_ctrl_clk", "sdio_ctrl_clk", "sgdma0_clk",
+					"sgdma1_clk", "hwchk_clk", "scramble_clk", "kl_clk", "dsc_kl",
+					"mac_clk", "sb_clk", "bootrom_sram_ctrl_clk", "see_clk_gate"; 
+			};
+		};
+
+		smc@18018800 {
+			compatible = "alitech,smc";
+			index = <0>;
+			reg = <0x18018800 0x100>;
+			reset = <&rst_ctrl0 20 1>;
+			interrupts = <28>;
+			init_clk_array = <3600000 5000000>;
+			invert_power = <0>;
+			invert_detect = <1>;
+			en_power_open_drain = <0>;
+			en_clk_open_drain = <0>;
+			en_data_open_drain = <0>;
+			en_rst_open_drain = <0>;
+			class_gpios = <&gpio0 3 1>, <&gpio0 3 1>;
+			class_a_gpio_info = <1 1>;
+			class_b_gpio_info = <0 0>;
+			status = "okay";
+		};
+	
+		smc@18018900 {
+			compatible = "alitech,smc";
+			index = <1>;
+			reg = <0x18018900 0x100>;
+			reset = <&rst_ctrl0 21 1>;
+			interrupts = <29>;
+			init_clk_array = <3600000>;
+			invert_power = <0>;
+			invert_detect = <1>;		
+			en_power_open_drain = <0>;
+			en_clk_open_drain = <0>;
+			en_data_open_drain = <0>;
+			en_rst_open_drain = <0>;
+			class_gpios = <&gpio2 20 1>, <&gpio2 20 1>;
+			class_a_gpio_info = <1 1>;
+			class_b_gpio_info = <0 0>;
+			status = "okay";
+		};
+
+	};
+};

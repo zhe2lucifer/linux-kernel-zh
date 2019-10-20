@@ -1,0 +1,11 @@
+#
+# Makefile for the WiFi 7601 drivers.
+#
+
+obj-m += mt7601Usta.o
+
+mt7601Usta-objs += mt7601Usta_dep.o
+
+$(obj)/mt7601Usta_dep.o:
+	cp $(obj)/mt7601Usta.bin $(obj)/mt7601Usta_dep.o
+

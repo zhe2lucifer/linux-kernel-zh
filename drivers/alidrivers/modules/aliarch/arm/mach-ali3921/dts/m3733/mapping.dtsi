@@ -1,0 +1,34 @@
+/{
+#address-cells = <1>;
+#size-cells = <1>;
+memory{
+ device_type = "memory";
+ reg = <
+    0x00000000 0x4000000 
+    0xBC0B900 0x43F4700 
+  >;
+  };
+memory-mapping{
+  compatible = "alitech,memory-mapping";
+  priv_area_buff  = <0x84000000  0x15B2B00>;  
+  dd_support_buff  = <0x855B2B00  0x20000>;  
+  decv_vbv_buff  = <0x855D2B00  0x600000>;  
+  decv_hw_buff  = <0x85BD2B00  0x1bf800>;  
+  vcap_buff  = <0x85D92300  0x26d800>;  
+  ejtag_debug_priv_buff  = <0x85FFFB00  0x100>;  
+  mcapi_buff  = <0x85FFFC00  0x400>;  
+  dmx_mem_buff  = <0x86000000  0x600000>;  
+  tsg_mem_buff  = <0x86600000  0x40000>;  
+  ape_mem_buff  = <0x86640000  0xa00000>;  
+  ge_cmd_buff  = <0x87040000  0x3c000>;  
+  vdec_still_buff  = <0x8707C000  0x300000>;  
+  dts_buff  = <0x8737C000  0x10000>;  
+  boot_de_param_buff  = <0x8738C000  0x40000>;  
+  fb0_cmap_buff  = <0x873CC000  0x400>;  
+  fb2_cmap_buff  = <0x873CC400  0x400>;  
+  decv_fb_buff  = <0x873CC800  0x2634000>;  
+  fb0_buff  = <0x89A00800  0x2010000>;  
+  fb2_buff  = <0x8BA10800  0x1fb000>;  
+  ejtag_debug_main_buff  = <0x8BC0B800  0x100>;  
+	};
+};

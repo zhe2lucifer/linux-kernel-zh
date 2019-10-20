@@ -1,0 +1,39 @@
+/********************************************************************************************************************
+*		Date		Athor			Version		Reason
+*   ============    =========   	=======   	=================
+* 1.  09/29/2015	Paladin.Ye     	Ver 0.1   	Create file for C3505 DVBS2 project
+*
+* 2.  05/30/2016	Paladin.ye			Ver 0.2			1. Add ACM mode and multi stream function
+																							2. Solve tone burst 0 issue in 'diseqc_operate' function  
+																							3. Optimize the autoscan function struct, and open macro "CHANNEL_CHANGE_ASYNC"
+																							4. Add timeout for softsearch to fix autoscan loss tp(mosaic) issue
+																							5. Reduce dvb-s mode lock threshold in "nim_c3505_hw_init"
+																							6. Fix some error for demod config in "nim_c3505_hw_init"
+																							7. When in dvb-s2 mode we use a new way to get snr "nim_c3505_get_snr_std"
+*																					
+* 3.  11/28/2016	Paladin.Ye     	Ver 0.3   	1. Set reg0x106[2] = 1 for upl != 188byte case.
+																							2. Change nim_c3505_get_snr_std name to nim_c3505_get_snr_db_s2 and fix some bug, used in c3505 and c3503c	
+																							3. Optimize get_mer function
+																							4. Check ACM work mode for C3503c in nim_c3505_open
+																							5. Fix a bug which will cause multi stream search TP slow in DVBS mode
+																							6. Improve 43.2M symbol rate TP performance in some special case
+																							7. Fix TP loss lock(pdpd 3430/h/1250) issue.
+																							8. Optimize PL time band value for reduce lock time of low symbol TP
+																							9. Add IOCTL:NIM_DRIVER_GET_SPECTRUM/NIM_DRIVER_GET_VALID_FREQ
+																							10. Move some debug code form get_agc to task, and optimize it
+																							11. Optimize nim_c3505_autoscan return value for AUI test
+																							12. Add IOCTL NIM_DRIVER_CAP_DATA for capture demod data to men, and transform HW address in nim_c3505_adc2mem_entity
+* 4.  02/17/2017	Paladin.Ye     	Ver 0.4     1. Add IOCTL NIM_DRIVER_SET_PLS for set specific PLSN, and add it in nim_c3505_channel_change
+                                              2. Modifi nim_c3505_get_lock for autoscan/tpscan fake tp
+                                              3. Modifi CRB4 to 0x0f, CR21 to 0x04 for 4.9E unlock/mosaic issue
+                                              4. Close ppll for ccm tp in acm work mode 1W/13E/23.5E mosaic issue
+																							5. Fix S2_LOOP_COEF_SET_tmp = c3505_s2_loop_coef_extra error.
+* 5.  03/20/2017	Paladin.Ye     	Ver 0.5     1. Add PLSN Search function in channel_change and autoscan
+                                              2. Improve performance of phase noise in acm mode
+                                              3. Improve performance of autoscan in acm mode
+*					      
+* 6.  06/09/2017	Paladin.Ye     	Ver 0.6     1. For C3503d			
+* 7.  06/26/2017  robin.gan	      Ver 0.7     1. support PLSN for C3503D	   
+* 8.  06/26/2017  Paladin.Ye	      Ver 0.8     1. Add log to USB     
+*                                                 1. Solved fake lock issue
+**************************************************************************************************************************/                                             

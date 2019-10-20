@@ -1,0 +1,10 @@
+#
+# Makefile for the ali Remote Process Call hld decv driver
+#
+
+obj-$(CONFIG_RPC_IMAGE)        += ali_rpc_image.o
+
+
+$(obj)/ali_rpc_image.o:
+	cp $(obj)/ali_rpc_image.bin $@
+

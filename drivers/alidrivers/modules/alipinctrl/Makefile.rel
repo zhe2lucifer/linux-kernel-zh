@@ -1,0 +1,10 @@
+# Driver for the ALi CAP210 pinctrl
+# Copyright (c) 2015, ALi CORPORATION.  All rights reserved.
+
+#
+# Makefile for the ali pinctrl driver
+#
+
+obj-$(CONFIG_PINCTRL_ALI_C3921)          += ali_pinctrl-c3921.o
+obj-$(CONFIG_PINCTRL_ALI_CAP210)         += alipinctrl-cap210.o
+alipinctrl-cap210-y += ali_pinctrl-cap210.o

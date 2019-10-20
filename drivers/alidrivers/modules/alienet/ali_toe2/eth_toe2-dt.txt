@@ -1,0 +1,63 @@
+/* ALi TOE2 MAC nodes
+   Required properties:
+   - compatible : Should be "alitech,cap210-toe2".
+   - reg : Address and length of the register set for the device.
+   - interrupts : Should contain toe2 mac interrupt.
+   - rx-csum-enable : String, hardware rx check sum enable.
+     Supported values are : "true", "flase".
+   - tx-csum-enable : String, hardware tx check sum enable.
+     Supported values are : "true", "flase".
+   - phy-mode : String, operation mode of the PHY interface.
+     Supported values are: "mii", "gmii", "rmii","rgmii".
+   - phy-reset-gpios : GPIO used to drive phy reset (optional).
+   - phy-reset-duration : Reset duration in milliseconds (optional).
+   - phy-link-gpios : GPIO used to show phy light blink for speed and link (optional).
+
+   Optional properties:
+   - local-mac-address : 6 bytes, mac address.
+*/
+
+		ethernet:ethernet@1802C000 {
+			compatible = "alitech,cap210-toe2";
+			#address-cells =<1>;
+			#size-cells = <0>;
+			device_type = "network";
+			model = "ALI TOE2";
+			reg = <0x1802C000 0x100 0x18000000 0x644>;
+			interrupts = <46>;
+            interrupt-parent = <&intc>;
+			local-mac-address = [00 90 E6 00 00 0A];
+			rx-csum-enable = <1>;
+			tx-csum-enable = <1>;
+			phy-handle = <&phy0>;
+			/*
+			 * phy-reset-gpios = <&gpio2 20 0>;
+			 * phy-reset-duration = <200>;
+			 * phy-blink-gpios = <&gpio1 1 0 &gpio2 31 0>;
+			 */
+			phy-mode = "rmii";
+			phy-reversemii = <0>;
+			/*
+			 *clocks = <&cap210_clks_gate1 13>;
+			 *clock-names = "mac_clk";
+			*/
+			status = "okay";
+			/*
+			 * pinctrl-0 = <&eth_pin_mux>;
+			 * pinctrl-names = "default"; 
+			*/
+			/* PHY nodes
+			 * Required properties:
+			 * - device_type : Should be "ethernet-phy"
+			 * - reg : The ID number for the phy, usually a small
+			 *         integer
+			 */
+            mdio {
+                phy0: ethernet-phy@0 {
+                    reg = <0>;
+                    device_type = "ethernet-phy";
+                };
+            };
+		};
+	};
+};

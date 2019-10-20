@@ -1,0 +1,6 @@
+
+all:
+	gcc -o sw_tool main.c 
+
+clean:
+	rm -f sw_tool

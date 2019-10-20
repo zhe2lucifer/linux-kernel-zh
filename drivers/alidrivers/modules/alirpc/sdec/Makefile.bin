@@ -1,0 +1,8 @@
+
+obj-$(CONFIG_RPC_HLD_SDEC)        += ali_rpc_hld_sdec.o
+
+ali_rpc_hld_sdec-objs += ali_rpc_hld_sdec_dep.o
+
+$(obj)/ali_rpc_hld_sdec_dep.o:
+	cp $(obj)/ali_rpc_hld_sdec.bin $(obj)/ali_rpc_hld_sdec_dep.o
+

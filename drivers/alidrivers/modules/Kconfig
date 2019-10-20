@@ -1,0 +1,730 @@
+menu "ALi driver selection"
+
+menu "ALi chip ID selection"
+choice
+	prompt "ALi chip ID"
+	default ALI_CHIP_M3921 
+	help
+	  Select different ALi chip ID
+
+config ALI_CHIP_M3921
+	bool "ALi M3921 chip ID"
+	
+config ALI_CHIP_M3515
+	bool "ALi M3515 chip ID"
+
+config ALI_CHIP_M3823
+        bool "ALi M3823 chip ID"
+
+config ALI_CHIP_M3627
+        bool "ALi M3627 chip ID"
+
+endchoice
+endmenu
+menu "Ali board select"
+
+config ALI_M3529_PINMUX
+	bool "Ali M3529"
+config ALI_M3528
+	bool "Ali M3528"           
+endmenu
+
+source "drivers/alidrivers/modules/alinim/Kconfig"
+
+config ALI_AS
+	bool "Support ALi Advanced Security project"
+
+config MEMORY_INTEGRITY_CHECKING
+	bool "Enable the memory integrity checking"
+		help
+			enalbe memory checking
+
+config USER_SPACE_MEMORY_INTEGRITY_CHECKING                                                                                                                                       
+	bool "Enable the user space memory integrity checking"
+	help
+		enalbe memory checking
+
+config ALI_TRANSPORT
+	tristate "Ali Transport Driver"
+	default y
+	---help---
+	  This driver is implemented by netlink. it helps to communicate the info with user space        
+
+
+
+config ENABLE_RPC
+	bool "Enable Remote Rrocess Call function for dual CPUs project"
+
+config RPC_ALI
+	bool "ALi Remote Process Call Driver"
+	depends on ENABLE_RPC
+
+config RPC_HLD_DECV
+	bool "ALi RPC hld decv driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_AVSYNC
+	bool "ALi RPC hld AV sync"
+	depends on ENABLE_RPC
+	
+config RPC_IMAGE
+	bool "ALi RPC IMAGE"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_VBI
+	bool "ALi RPC hld VBI"
+	depends on ENABLE_RPC
+config RPC_HLD_DIS
+	bool "ALi RPC hld dis driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_DECA
+	bool "ALi RPC hld deca driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_SND
+	bool "ALi RPC hld snd driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_GMA
+	bool "ALi RPC hld gma driver"
+	depends on ENABLE_RPC
+	
+
+config RPC_SBM
+	bool "ALi RPC sbm driver"
+	depends on ENABLE_RPC
+
+config RPC_TAC
+	bool "ALi RPC tac driver"
+	depends on ENABLE_RPC
+	default y
+
+config RPC_SEC
+	bool "ALi RPC sec driver"
+	depends on ENABLE_RPC
+	default y
+config RPC_H265
+	bool "H265 support"
+	depends on ENABLE_RPC
+	
+	
+config RPC_ENCODER
+    bool "ALi RPC Encoder Driver"
+    depends on ENABLE_RPC
+    default y	
+
+config RPC_HLD_PVR
+    bool "ALi RPC hld pvr driver"
+    depends on ENABLE_RPC && ALI_PVR_RPC
+    default y	
+    
+config FB_ALI
+	bool "ALi Frame Buffer Driver"
+	depends on FB && RPC_HLD_DIS
+	select FB_CFB_FILLRECT
+    select FB_CFB_COPYAREA
+    select FB_CFB_IMAGEBLIT
+    ---help---
+      This driver implements support for the ALi STB SOC
+	
+config HDMI_ALI
+	bool "ALi HDMI Driver"
+	
+config HDCP_ENABLE_ALI
+	bool "ALi HDMI Driver HDCP Enable"
+	depends on HDMI_ALI	
+
+config CEC_ENABLE_ALI
+	bool "ALi HDMI Driver CEC Enable"
+	depends on HDMI_ALI
+	
+config ALI_HEC
+	bool "ALi HEC Driver Enable"
+	depends on HDMI_ALI
+	
+##Mali settings
+
+config MALI400
+	tristate "Mali-300/400/450 support"
+	depends on ARM
+	select DMA_SHARED_BUFFER
+	default y
+	---help---
+	  This enables support for the ARM Mali-300, Mali-400, and Mali-450
+	  GPUs.
+
+	  To compile this driver as a module, choose M here: the module will be
+	  called mali.
+
+config MALI450
+	bool "Enable Mali-450 support"
+	depends on MALI400
+	default y
+	---help---
+	  This enables support for Mali-450 specific features.
+
+config MALI400_DEBUG
+	bool "Enable debug in Mali driver"
+	depends on MALI400
+	default n
+	---help---
+	  This enabled extra debug checks and messages in the Mali driver.
+
+config MALI400_PROFILING
+	bool "Enable Mali profiling"
+	depends on MALI400
+	select TRACEPOINTS
+	default n
+	---help---
+	  This enables gator profiling of Mali GPU events.
+
+config MALI400_INTERNAL_PROFILING
+	bool "Enable internal Mali profiling API"
+	depends on MALI400_PROFILING
+	default n
+	---help---
+	  This enables the internal legacy Mali profiling API.
+
+config MALI400_UMP
+	tristate "Enable UMP support"
+	depends on MALI400
+	default y
+	---help---
+	  This enables support for the UMP memory sharing API in the Mali driver.
+
+config UMP
+	tristate "UMP support"
+	depends on MALI400_UMP
+	default y
+	---help---
+	  This enables support for the UMP memory allocation and sharing API.
+
+	  To compile this driver as a module, choose M here: the module will be
+	  called ump.
+
+
+config UMP_DEBUG
+	bool "Enable extra debug in UMP"
+	depends on UMP
+	default n
+	---help---
+	  This enabled extra debug checks and messages in UMP.
+
+#config MALI400_POWER_PERFORMANCE_POLICY
+#	bool "Enable Mali power performance policy"
+#	depends on MALI400
+#	default n
+#	---help---
+#	  This enables support for dynamic performance scaling of Mali with the goal of lowering power consumption.
+#
+#config MALI_DMA_BUF_MAP_ON_ATTACH
+#	bool "Map dma-buf attachments on attach"
+#	depends on MALI400 && DMA_SHARED_BUFFER
+#	default y
+#	---help---
+#	  This makes the Mali driver map dma-buf attachments after doing
+#	  attach. If this is not set the dma-buf attachments will be mapped for
+#	  every time the GPU need to access the buffer.
+#
+#	  Mapping for each access can cause lower performance.
+#
+#config MALI_SHARED_INTERRUPTS
+#	bool "Support for shared interrupts"
+#	depends on MALI400
+#	default n
+#	---help---
+#	  Adds functionality required to properly support shared interrupts.  Without this support,
+#	  the device driver will fail during insmod if it detects shared interrupts.  This also
+#	  works when the GPU is not using shared interrupts, but might have a slight performance
+#	  impact.
+#
+#config MALI_PMU_PARALLEL_POWER_UP
+#	bool "Power up Mali PMU domains in parallel"
+#	depends on MALI400
+#	default n
+#	---help---
+#	  This makes the Mali driver power up all PMU power domains in parallel, instead of
+#	  powering up domains one by one, with a slight delay in between. Powering on all power
+#	  domains at the same time may cause peak currents higher than what some systems can handle.
+#	  These systems must not enable this option.
+
+config FUSION_DEVICE
+  bool "Fusion Kernel Device"
+---help---
+	  Fusion is the IPC API used by DirectFB and FusionSound.
+	  
+	  
+
+config VIDEO_ALI
+	bool "ALi Video Player Core"
+	
+config ALI_M36_AUDIO_RPC
+	bool "ALi Audio Player Core"
+	depends on ENABLE_RPC
+	
+config ALI_AVSYNC_RPC
+	bool "ALi AV sync Driver"
+	depends on ENABLE_RPC
+	
+config ALI_PVR_RPC
+	bool "ALi PVR Driver"
+	depends on ENABLE_RPC
+	
+config ALI_M36_CIC
+	tristate "ALi CI (Common Interface) Controller"
+	help
+	support ALI CI module
+	
+config ALI_M36_SMARTCARD
+	bool "ALi M36xx Smart Card Controller"
+	
+config PINCTRL_ALI
+	bool "Pin controller driver"
+	default y
+	help
+		ALi Pin controller driver option
+
+
+config GPIO_ALI_C3505
+	bool "ALi C3505 GPIO controller driver"
+	depends on ALI_M3505
+	default y
+
+config ALI_GPIO
+	bool "ALi GPIO controller driver"
+    	depends on PINCTRL && PINCTRL_ALI && GPIOLIB && USE_OF
+	default y
+	
+config M36_GPIO_ENABLE_INTERRUPT
+	bool "ALi M36 GPIO enable interrupt"
+	
+config DVB_ALI_M36_DMX
+	bool "ALi DMX Driver"
+	depends on ENABLE_RPC
+
+config DVB_ALI_M36_DMX_CACHE
+    bool "ALi DMX Cache Driver"
+    depends on DVB_ALI_M36_DMX
+    default n
+	
+config DVB_ALI_M36_TSG
+	bool "ALi TSG Driver"
+	
+config DVB_ALI_M36_TSI
+	bool "ALi TSI Driver"
+	
+config ALI_GPIO_I2C
+    tristate "Ali GPIO to I2C driver."    
+    help
+      This provides a  GPIO to I2C driver by Ali SoC.
+
+config ALI_IP_BW_TEST
+	bool "IP BW Driver"
+	help
+		ALi IP Bandwidth test Driver option
+
+     
+config ALI_MMC
+	tristate "ALI_MMC/SD/SDIO card support"
+	depends on HAS_IOMEM
+	select MMC
+	select MMC_BLOCK
+	select BLOCK
+	help
+	  This selects MultiMediaCard, Secure Digital and Secure Digital I/O support.
+	  
+config ALI_MMC_V3_HW_54M_FREQUENCY
+	bool "Enable 54MHz Frequency for C3921/M3823"
+	depends on ALI_MMC
+	help
+	  The Normal eMMC/SD operting clock is 52MHz, enable this will make clock to 54MHz,
+	  otherwise closk is 27MHz.
+      
+choice
+        prompt "ALi Ethernet support"
+        default ALI_SWITCH
+        help
+          Select different ALi ethernet driver
+
+config ALI_TOE2
+    bool "ALi TOE II support"
+    depends on ALI_OTP
+
+config ALI_SWITCH
+    bool "ALi SWITCH support"
+
+config ALI_GMAC
+    bool "ALi GMAC support"
+
+config NONE_ALI_MAC
+	bool "NONE"
+endchoice	
+choice
+    prompt "Control ETH LED light"
+    default SOFT_CTL_LIGHT
+    help
+        disable/enable ethernet led
+config NONE_ETH_LED
+    bool "No ethernet led"
+config SOFT_CTL_LIGHT
+    bool "Use software to control ethernet led"
+config HARD_CTL_LIGHT
+    bool "PHY automatically control ethernet led"
+endchoice	
+
+config ALI_SBM_CLIENT
+	depends on ENABLE_RPC
+	bool "ALi Share Buffer Manager Client driver"
+config ALI_KL_FD_FRAMEWORK
+	tristate "ALi Key Ladder file description framework "
+	default m
+	help
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+
+choice
+        prompt "IR driver"
+        default ALI_IR
+        help
+          Select a IR driver
+
+config INPUT_IR_LIRC_ALI
+    bool "lirc driver"
+
+config ALI_IR
+    bool "ALi IR driver"
+
+endchoice	
+
+choice
+	prompt "ALI panel driver"
+	default ALI_PAN_CH455
+	help
+	  Select a panel driver
+
+config ALI_PAN_CH455
+	bool "CH455 Panel Driver"
+	depends on ALI_GPIO_I2C
+	help
+	  This option enables ALi CH455 Panel driver support.
+
+config ALI_PAN_CH454
+	tristate "CH454 Panel Driver"
+	help
+	  This provides a ALi CH454 Panel driver
+endchoice
+
+config ALI_SPI
+    tristate "ALi SPI Controller driver."
+    depends on SPI_MASTER
+    help
+      This provides a SPI Controller driver.
+
+config ALI_SPI_NOR
+    tristate "ALi SPI NOR driver."
+    depends on ALI_SPI && MTD
+    help
+      This provides a SPI NOR driver.
+           
+config ALI_SOC
+	bool "ALi Soc driver"
+	
+config ALI_PM
+	bool "ALi power management implementation"
+	
+config ALI_SBM
+	bool "ALi SBM Driver for CPU & SEE memory access"
+	
+config ALI_TAC
+	depends on ENABLE_RPC
+	bool "ALi TAC Driver for VMX"
+	default y
+config ALI_SEC
+	depends on ENABLE_RPC
+	bool "ALi SEC Driver for VMX"
+	default y
+
+config ALI_DSC
+	tristate "ALi descrambler driver "
+	default m
+	depends on ALI_KL_FD_FRAMEWORK && RPC_ALI && ALI_SEE_BUS_ENABLE && ALI_SBM_CLIENT
+	help
+	  If you say Y here, you will get support for a character device
+	  interface into the Descrambler that are stored on the SEE processor.
+	  This will not get you access to the secure memory however.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+config DSC_LEGACY_IOCTL
+	bool "ALi descrambler legacy io request"
+	default y
+	depends on ALI_DSC
+	help
+	  If you say Y here, you will get support for a legacy io
+	  request of the ALi Descrambler.
+
+config ALI_VSC
+	tristate "ALi VSC driver for CONAX"
+	default y
+	help
+		Just add for CONAX VSC.
+		
+config ALI_VSC_SMI
+	tristate "Add for SMI + CONAX VSC"
+	default n
+	depends on ALI_VSC
+	help
+		Just add for CONAX VSC + SMI.
+		
+config CAS9_VSC_ENABLE
+	tristate "ALi VSC for CONAX"
+	default n
+	help
+		Just add for CONAX VSC.
+config ALI_CRYPTO_NAND
+   bool "Crypto Nand Driver for ALi"
+   help
+	 This provides crypto nand driver for ALi SoC.
+	 
+config ALI_CRYPTO
+   bool "ALi Crypto using DSC HW"
+   help
+	 Some AES functions.	
+	 	
+config ALI_SCR
+	tristate "ALi scrambler driver"
+	default m
+	depends on ALI_KL_FD_FRAMEWORK && ALI_SEE_BUS_ENABLE && ALI_SBM_CLIENT
+	help
+	  If you say Y here, you will get support for a character device
+	  interface into the scrambler that are stored on the SEE processor.
+	  This will not get you access to the secure memory however.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+config SCR_LEGACY_IOCTL
+	bool "ALi scrambler legacy io request"
+	default y
+	depends on ALI_SCR
+	help
+	  If you say Y here, you will get support for a legacy io
+	  request of the ALi Scrambler.
+
+menu "ALi Security Hashing Algorithm"
+	depends on ALI_SEE_BUS_ENABLE && ALI_SBM_CLIENT
+
+config ALI_SHA
+	tristate "ALi Hash on socket SEQPACKET"
+	default y
+	select CRYPTO_USER_API_HASH
+	help
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+
+config ALI_SHA_CDEV
+	bool "add cdev for ALi Hash"
+	default n
+	depends on ALI_SHA
+	help
+	  To add /dev/sha node for ALi Security Hash Algorithm, choose Y here.
+	  This config is only supported by the SHA module without scatter mode feature.
+
+endmenu
+
+config ALI_CRC32
+	tristate "ALi CRC32 "
+	default m
+	depends on ALI_SEE_BUS_ENABLE && ALI_SBM_CLIENT
+	help
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+	  
+config ALI_VBI
+	tristate "ALi VBI  module"
+	default n
+	help
+	  If unsure, it is safe to say Y.
+	  
+	  
+config ALI_KL
+	tristate "ALi Key Ladder driver"
+	default m
+	depends on ALI_KL_FD_FRAMEWORK && RPC_ALI && ALI_SEE_BUS_ENABLE && ALI_SBM_CLIENT
+	help
+	  If you say Y here, you will get support for a character device
+	  interface into the Key Ladder that are stored on the SEE processor.
+	  This will not get you access to the secure memory however.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+config KL_LEGACY_IOCTL
+	bool "ALi Key Ladder legacy io request"
+	default y
+	depends on ALI_KL
+	help
+	  If you say Y here, you will get support for a legacy io
+	  request of the ALi Key Ladder.
+config ALI_TRNG
+	tristate "ALi TRNG driver"
+	default m
+	depends on RPC_ALI && ALI_SEE_BUS_ENABLE && ALI_SBM_CLIENT
+	select HW_RANDOM
+	help
+	  If you say Y here, you will get support for True Random
+	  Number Generator that are stored on the SEE processor.
+	  This will not get you access to the secure memory however.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+	
+config ALI_PMU
+	bool "ALi PMU Driver"
+	select ALI_STANDBY_TO_RAM
+	select ALI_PM
+	help
+	  STR(suspend to ram) function is default enabled in linux kernel.
+	
+config ALI_UART_IO
+	bool "ALi UART IO Driver"
+	
+config ALI_CERT
+	bool "ALi CERT Driver"
+	default n
+	depends on ALI_KL_FD_FRAMEWORK
+	help
+	  CERT ASA and AKL driver for advanced security.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say N.
+	
+config ALI_OTP
+	tristate "ALi OTP driver"
+	default m
+	help
+	  If you say Y here, you will get support for a character device
+	  interface into the One Time Programming Device that are stored
+	  on the SEE processor. This will not get you access to the
+	  secure memory however.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say Y.
+	  
+config ALI_TRIM
+	tristate "ALi Trim Library"
+	select ALI_OTP	
+	default n
+	help
+	  Trim Library for drivers to initial hw.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say N.
+	  	  
+config ALI_CF
+	bool "ALi CryptoFirewall Driver"
+	default n
+	depends on ALI_KL
+	help
+	  CF driver for advanced security.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say N.
+
+config ALI_CASI
+	tristate "ALi CASI driver for IRDETO"
+	default n
+	depends on ALI_DSC && ALI_KL
+	help
+	  CASI driver for supporting IRDETO.
+	  To compile this driver as a module, choose M here.
+	  If unsure, it is safe to say N.
+	  
+config ALI_MBX_AS
+	bool "ALi mailbox as support"
+	
+#config ALI_ENCODER
+#    tristate "Encoder Driver for ALi"
+#    depends on RPC_ENCODER
+#    default y
+#    help
+#        This provides interface for support enocder in 3921 chips.
+config WIRELESS_EXT 
+    def_bool y
+	
+config WEXT_PRIV
+    def_bool y
+
+config WEXT_SPY
+    def_bool y
+
+config ALI_SW_AFD
+	bool "Support ALi software afd"	
+    def_bool n
+    
+config ALI_HW_AFD
+	bool "Support ALi hardware afd"	
+    def_bool n
+    
+config ALI_WATCHDOG
+    bool "ALi watchdog driver"
+    
+config ALI_IMAGE
+    bool "ALi image driver"
+
+config ALI_DVFS
+    bool "Ali dvfs driver."    
+
+config ALI_OTV5
+    bool "Add a wrapper for openTV5"
+    
+config DISABLE_SEE_BOOTMEDIA
+    bool "In AS boot, when see has diabled the bootmedia, main need to config this"    
+
+config CA_ENABLE
+	bool "ALi ca support"
+
+config ALI_INIT_RAMFS
+  bool "ALi init ramfs stored in DRAM"
+  
+config ALI_SEE_BUS_ENABLE
+    bool "ALi SEE BUS Enable"
+    depends on ENABLE_RPC
+    help
+      This provides ALi SEE BUS select
+      
+config SUPPORT_NAND_NOR
+  bool "mutex protect for pinmux switching of Nand/Nor"
+
+config DISABLE_ALI_IO_PRIVATE
+  bool "Disable IO private usage, SEE can access UART and cannot support CSA3 to decrypt steam"
+  def_bool n
+config LOGSM_SEE2MAIN
+  bool "Enable see output log to main by share memory"
+  def_bool n
+
+config ALI_STANDBY_TO_RAM
+    bool "ALi suspend to ram support"
+
+config ALI_STR_DEBUG_ENABLE
+    bool "Enable uart printf in STR flow."
+    
+config ALI_M3529_PANEL_PATCH            
+    bool "ALi m3529_panel_patch"
+        
+config RPC_USE_VIRTUAL_DEVICE_ID
+	bool "using virtual device id instead of actual device address in remote call"
+	def_bool y
+
+config ALI_TEE_ENABLE
+	bool "Enable Tee cpu in the Soc which has one. Pls Note: It affects the usage of the share memory."
+	def_bool n
+
+config MULTI_RAMDISK
+	bool "Support multi ramdisk"
+	help
+		Support multi ramdisk for customer's requirement
+		Please select N if unsure.
+
+config ALI_RT7601_WIFI
+	bool "ALi RT7601 Wifi"
+	default n
+
+config ALI_RT5370_WIFI
+	bool "ALi RT5370 Wifi"
+	default n
+
+#add new config here
+
+endmenu
